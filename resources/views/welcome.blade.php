@@ -16,7 +16,7 @@
                     <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-blue-600">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="text-gray-700 hover:text-blue-600">Logout</button>
+                        <button type="submit" class="text-gray-700 hover:text-blue-600">Cerrar sesión</button>
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600">Inicia Sesión</a>
