@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Rutas CRUD de usuarios (solo para gerentes)
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:gerente'])->group(function () {
     Route::resource('users', UserController::class);
 });
 
