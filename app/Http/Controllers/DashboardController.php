@@ -13,13 +13,16 @@ class DashboardController extends Controller
     public function index()
     {
         $esCliente = Gate::allows('es-cliente');
+        $esGerente = Gate::allows('es-gerente');
+        $esAdministrador = Gate::allows('es-administrador');
 
         return view('dashboard', [
-            'esAdministrador' => Gate::allows('es-administrador'),
-            'esGerente' => Gate::allows('es-gerente'),
+            'esAdministrador' => $esAdministrador,
+            'esGerente' => $esGerente,
             'esCliente' => $esCliente,
             'totalUsuarios' => Usuario::count(),
             'totalProductos' => Producto::count(),
+            'totalClientes' => Usuario::where('rol', 'cliente')->count(),
             'totalCategorias' => Categoria::count(),
             'totalVentas' => Venta::count(),
             'productos' => $esCliente

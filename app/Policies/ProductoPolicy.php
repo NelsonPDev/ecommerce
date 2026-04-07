@@ -24,12 +24,12 @@ class ProductoPolicy
 
     public function update(Usuario $user, Producto $producto): bool
     {
-        return $user->esAdministrador() || ($user->esGerente() && $producto->usuario_id === $user->id);
+        return $user->esAdministrador() || $user->esGerente();
     }
 
     public function delete(Usuario $user, Producto $producto): bool
     {
-        return $user->esAdministrador() || ($user->esGerente() && $producto->usuario_id === $user->id);
+        return $user->esAdministrador() || $user->esGerente();
     }
 
     public function buy(Usuario $user): bool

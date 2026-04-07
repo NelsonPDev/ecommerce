@@ -6,7 +6,7 @@
         <h1 class="mt-3 text-3xl font-bold">Bienvenido, {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</h1>
     </section>
 
-    @if (! $esCliente)
+    @if ($esAdministrador)
         <section class="mt-8 grid gap-5 md:grid-cols-4">
             <div class="rounded-2xl bg-slate-900 p-6 text-white">
                 <p class="text-sm text-slate-300">Usuarios</p>
@@ -23,6 +23,17 @@
             <div class="rounded-2xl bg-white p-6 shadow-sm">
                 <p class="text-sm text-slate-500">Ventas</p>
                 <p class="mt-2 text-3xl font-bold">{{ $totalVentas }}</p>
+            </div>
+        </section>
+    @elseif ($esGerente)
+        <section class="mt-8 grid gap-5 md:grid-cols-2">
+            <div class="rounded-2xl bg-white p-6 shadow-sm">
+                <p class="text-sm text-slate-500">Clientes</p>
+                <p class="mt-2 text-3xl font-bold">{{ $totalClientes }}</p>
+            </div>
+            <div class="rounded-2xl bg-white p-6 shadow-sm">
+                <p class="text-sm text-slate-500">Productos</p>
+                <p class="mt-2 text-3xl font-bold">{{ $totalProductos }}</p>
             </div>
         </section>
     @endif
@@ -44,11 +55,13 @@
 
         @if ($esGerente)
             <div class="rounded-2xl bg-white p-6 shadow-sm">
-                <h2 class="text-xl font-bold">Panel de gerente</h2>
-                <p class="mt-3 text-sm text-slate-600">Accion principal: editar clientes. No puede editar gerentes ni administradores.</p>
-                <div class="mt-4 flex flex-wrap gap-3">
-                    <a href="{{ route('usuarios.index') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Editar clientes</a>
-                </div>
+                <h2 class="text-xl font-bold">Gerente</h2>
+                <p class="mt-3 text-sm text-slate-600">Acciones disponibles:</p>
+                <ul class="mt-3 ml-5 list-disc space-y-2 text-sm text-slate-600">
+                    <li>Editar clientes</li>
+                    <li>Editar productos (solo tus productos)</li>
+                </ul>
+                <p class="mt-4 text-sm text-slate-500">Como gerente puedes editar clientes y tus propios productos.</p>
             </div>
         @endif
 

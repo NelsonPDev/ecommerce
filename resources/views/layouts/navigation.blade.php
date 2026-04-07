@@ -26,6 +26,7 @@
                         <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Ventas</a>
                     @elseif (auth()->user()->esGerente())
                         <a href="{{ route('usuarios.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Clientes</a>
+                        <a href="{{ route('productos.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Productos</a>
                     @else
                         <a href="{{ route('carrito.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Carrito</a>
                         <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Historial</a>
