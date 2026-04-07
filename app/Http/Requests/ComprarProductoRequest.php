@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Producto;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,7 @@ class ComprarProductoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('comprar', \App\Models\Producto::class);
+        return $this->user()?->can('buy', Producto::class) ?? false;
     }
 
     /**

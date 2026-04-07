@@ -36,4 +36,9 @@ class ProductoPolicy
     {
         return $user->esCliente();
     }
+
+    public function comprar(Usuario $user): bool
+    {
+        return $this->buy($user);
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -114,11 +114,12 @@ class Usuario extends Authenticatable
     /**
      * Relación hasManyThrough: Usuario -> Productos -> Categorías
      */
-    public function categorias(): Builder
+    public function categorias(): Collection
     {
         return Categoria::query()
             ->whereIn('categorias.id', $this->categoriaProductos()->select('categoria_id'))
-            ->distinct();
+            ->distinct()
+            ->get();
     }
 
     public function hasRole(string $rol): bool

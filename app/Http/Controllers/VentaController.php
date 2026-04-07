@@ -99,7 +99,7 @@ class VentaController extends Controller
 
     public function cart(): View
     {
-        abort_unless(auth()->user()->esCliente(), 403);
+        $this->authorize('buy', Producto::class);
 
         [$items, $total] = $this->cartSummary();
 
@@ -135,7 +135,7 @@ class VentaController extends Controller
 
     public function updateCart(\App\Http\Requests\UpdateCartRequest $request, Producto $producto): RedirectResponse
     {
-        abort_unless(auth()->user()->esCliente(), 403);
+        $this->authorize('buy', Producto::class);
 
         $cantidad = (int) $request->validated('cantidad');
 
@@ -157,7 +157,7 @@ class VentaController extends Controller
 
     public function removeFromCart(Producto $producto): RedirectResponse
     {
-        abort_unless(auth()->user()->esCliente(), 403);
+        $this->authorize('buy', Producto::class);
 
         $cart = session()->get('cart', []);
         unset($cart[$producto->id]);
@@ -168,7 +168,7 @@ class VentaController extends Controller
 
     public function checkout(): View|RedirectResponse
     {
-        abort_unless(auth()->user()->esCliente(), 403);
+        $this->authorize('buy', Producto::class);
 
         [$items, $total] = $this->cartSummary();
 
@@ -181,8 +181,8 @@ class VentaController extends Controller
 
     public function processCheckout(ProcessCheckoutRequest $request): RedirectResponse
     {
+        $this->authorize('buy', Producto::class);
         $usuario = auth()->user();
-        abort_unless($usuario->esCliente(), 403);
 
         [$items, $total] = $this->cartSummary();
 
