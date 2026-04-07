@@ -36,18 +36,20 @@ class ProductoController extends Controller
     public function store(StoreProductoRequest $request)
     {
         $data = $request->validated();
+        $usuario = auth()->user();
+
         $producto = Producto::create([
             'nombre' => $data['nombre'],
             'descripcion' => $data['descripcion'],
             'precio' => $data['precio'],
             'existencia' => $data['existencia'],
-            'usuario_id' => auth()->id(),
+            'usuario_id' => $usuario->id,
         ]);
 
         $producto->categorias()->sync($data['categorias']);
 
         Log::channel('productos')->info('Producto creado', [
-            'usuario_id' => auth()->id(),
+            'usuario_id' => $usuario->id,
             'producto_id' => $producto->id,
             'nombre' => $producto->nombre,
         ]);
@@ -68,6 +70,7 @@ class ProductoController extends Controller
     public function update(UpdateProductoRequest $request, Producto $producto)
     {
         $data = $request->validated();
+        $usuario = auth()->user();
 
         $producto->update([
             'nombre' => $data['nombre'],
@@ -79,7 +82,7 @@ class ProductoController extends Controller
         $producto->categorias()->sync($data['categorias']);
 
         Log::channel('productos')->info('Producto actualizado', [
-            'usuario_id' => auth()->id(),
+            'usuario_id' => $usuario->id,
             'producto_id' => $producto->id,
             'nombre' => $producto->nombre,
         ]);
@@ -90,9 +93,10 @@ class ProductoController extends Controller
     public function destroy(Producto $producto)
     {
         $this->authorize('delete', $producto);
+        $usuario = auth()->user();
 
         Log::channel('productos')->info('Producto eliminado', [
-            'usuario_id' => auth()->id(),
+            'usuario_id' => $usuario->id,
             'producto_id' => $producto->id,
             'nombre' => $producto->nombre,
         ]);

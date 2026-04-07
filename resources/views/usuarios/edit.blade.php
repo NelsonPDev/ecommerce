@@ -29,10 +29,13 @@
             <div class="md:col-span-2">
                 <label class="mb-2 block text-sm font-semibold">Rol</label>
                 <select name="rol" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
-                    <option value="administrador" @selected(old('rol', $usuario->rol) === 'administrador')>Administrador</option>
-                    <option value="gerente" @selected(old('rol', $usuario->rol) === 'gerente')>Gerente</option>
-                    <option value="cliente" @selected(old('rol', $usuario->rol) === 'cliente')>Cliente</option>
+                    @foreach ($rolesDisponibles as $valor => $etiqueta)
+                        <option value="{{ $valor }}" @selected(old('rol', $usuario->rol) === $valor)>{{ $etiqueta }}</option>
+                    @endforeach
                 </select>
+                @if (auth()->user()->esGerente())
+                    <p class="mt-2 text-sm text-slate-500">Como gerente solo puedes editar usuarios con rol cliente.</p>
+                @endif
             </div>
             <div class="md:col-span-2 flex flex-wrap gap-3">
                 <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Actualizar</button>

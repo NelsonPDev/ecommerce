@@ -3,11 +3,11 @@
 @section('content')
     <div class="flex items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold">{{ auth()->user()->esCliente() ? 'Mis compras' : 'Ventas registradas' }}</h1>
-            <p class="mt-2 text-sm text-slate-500">Cada venta muestra producto, cliente, vendedor, fecha y total.</p>
+            <h1 class="text-3xl font-bold">{{ auth()->user()->esCliente() ? 'Historial de compras' : 'Ventas registradas' }}</h1>
+            <p class="mt-2 text-sm text-slate-500">Cada venta muestra producto, cliente, vendedor, cantidad, fecha y total.</p>
         </div>
         @if (auth()->user()->esCliente())
-            <a href="{{ route('ventas.create') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Nueva compra</a>
+            <a href="{{ route('carrito.index') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Ver carrito</a>
         @endif
     </div>
 
@@ -18,6 +18,7 @@
                     <th class="px-4 py-3 text-left text-sm font-semibold">Producto</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Cliente</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Vendedor</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Cantidad</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Fecha</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Total</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Acciones</th>
@@ -29,6 +30,7 @@
                         <td class="px-4 py-4">{{ $venta->producto->nombre }}</td>
                         <td class="px-4 py-4">{{ $venta->cliente->nombre }} {{ $venta->cliente->apellidos }}</td>
                         <td class="px-4 py-4">{{ $venta->vendedor->nombre }} {{ $venta->vendedor->apellidos }}</td>
+                        <td class="px-4 py-4">{{ $venta->cantidad }}</td>
                         <td class="px-4 py-4">{{ $venta->fecha->format('Y-m-d') }}</td>
                         <td class="px-4 py-4">${{ number_format($venta->total, 2) }}</td>
                         <td class="px-4 py-4">

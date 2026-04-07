@@ -37,6 +37,13 @@ Route::middleware('auth')->group(function () {
         return 'Usuario autenticado: ' . Auth::user()->correo;
     })->name('test.auth');
 
+    Route::get('/carrito', [VentaController::class, 'cart'])->name('carrito.index');
+    Route::post('/carrito', [VentaController::class, 'addToCart'])->name('carrito.add');
+    Route::patch('/carrito/{producto}', [VentaController::class, 'updateCart'])->name('carrito.update');
+    Route::delete('/carrito/{producto}', [VentaController::class, 'removeFromCart'])->name('carrito.remove');
+    Route::get('/carrito/checkout', [VentaController::class, 'checkout'])->name('carrito.checkout');
+    Route::post('/carrito/checkout', [VentaController::class, 'processCheckout'])->name('carrito.process');
+
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('categorias', CategoriaController::class)->except(['index', 'show']);
     Route::resource('productos', ProductoController::class)->except(['index', 'show']);

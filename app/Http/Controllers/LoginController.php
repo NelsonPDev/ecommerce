@@ -29,7 +29,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             Log::channel('autenticacion')->info('Login exitoso', [
-                'usuario_id' => Auth::id(),
+                'usuario_id' => Auth::user()?->id,
                 'correo' => $request->validated('correo'),
                 'ip' => $request->ip(),
             ]);
@@ -50,7 +50,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Log::channel('autenticacion')->info('Logout', [
-            'usuario_id' => Auth::id(),
+            'usuario_id' => Auth::user()?->id,
             'correo' => Auth::user()?->correo,
             'ip' => $request->ip(),
         ]);

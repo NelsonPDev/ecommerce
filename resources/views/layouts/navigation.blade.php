@@ -16,17 +16,16 @@
             <a href="{{ route('home') }}" class="text-lg font-bold text-slate-900">TechStore</a>
 
             @auth
-                @if (! $publicRoute)
-                    <a href="{{ route('dashboard') }}" class="text-sm text-slate-600 hover:text-slate-900">Dashboard</a>
+                <a href="{{ route('dashboard') }}" class="text-sm text-slate-600 hover:text-slate-900">Dashboard</a>
 
+                @if (! $publicRoute)
                     @if (auth()->user()->esAdministrador())
                         <a href="{{ route('usuarios.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Usuarios</a>
-                        <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Ventas</a>
                     @elseif (auth()->user()->esGerente())
                         <a href="{{ route('usuarios.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Clientes</a>
-                        <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Ventas</a>
                     @else
-                        <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Mis compras</a>
+                        <a href="{{ route('carrito.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Carrito</a>
+                        <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Historial</a>
                     @endif
                 @endif
             @endauth
@@ -34,22 +33,16 @@
 
         <div class="flex items-center gap-3">
             @auth
-                @if ($publicRoute)
-                    <a href="{{ route('dashboard') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-                        Ir al dashboard
-                    </a>
-                @else
-                    <div class="text-right text-sm">
-                        <p class="font-semibold text-slate-900">{{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</p>
-                        <p class="text-slate-500">{{ auth()->user()->rol }}</p>
-                    </div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-                            Cerrar sesion
-                        </button>
-                    </form>
-                @endif
+                <div class="text-right text-sm">
+                    <p class="font-semibold text-slate-900">{{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</p>
+                    <p class="text-slate-500">{{ auth()->user()->rol }}</p>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="rounded-lg px-4 py-2 text-sm font-semibold hover:bg-red-700" style="background-color: #dc2626; color: #ffffff; border: 1px solid #b91c1c;">
+                        Cerrar sesion
+                    </button>
+                </form>
             @else
                 <a href="{{ route('login') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
                     Iniciar sesion

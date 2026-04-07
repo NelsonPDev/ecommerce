@@ -12,14 +12,19 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $esCliente = Gate::allows('es-cliente');
+
         return view('dashboard', [
             'esAdministrador' => Gate::allows('es-administrador'),
             'esGerente' => Gate::allows('es-gerente'),
-            'esCliente' => Gate::allows('es-cliente'),
+            'esCliente' => $esCliente,
             'totalUsuarios' => Usuario::count(),
             'totalProductos' => Producto::count(),
             'totalCategorias' => Categoria::count(),
             'totalVentas' => Venta::count(),
+            'productos' => $esCliente
+                ? Producto::with(['usuario', 'categorias'])->latest()->paginate(9)
+                : null,
         ]);
     }
 }

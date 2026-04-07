@@ -31,7 +31,14 @@
                     <a href="{{ route('productos.edit', $producto) }}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white">Editar producto</a>
                 @endcan
                 @if (auth()->user()->esCliente())
-                    <a href="{{ route('ventas.create') }}" class="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white">Comprar producto</a>
+                    <form method="POST" action="{{ route('carrito.add') }}" class="flex flex-wrap items-center gap-3">
+                        @csrf
+                        <input type="hidden" name="producto_id" value="{{ $producto->id }}">
+                        <input type="number" name="cantidad" min="1" max="{{ $producto->existencia }}" value="1" class="w-24 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                        <button type="submit" class="rounded-lg px-4 py-2 text-sm font-semibold" style="background-color: #16a34a; color: #ffffff; border: 1px solid #15803d;">
+                            Agregar al carrito
+                        </button>
+                    </form>
                 @endif
             @endauth
         </div>

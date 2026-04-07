@@ -57,14 +57,6 @@ class Usuario extends Authenticatable
     }
 
     /**
-     * Get the name of the unique identifier for the user.
-     */
-    public function getAuthIdentifierName()
-    {
-        return 'correo';
-    }
-
-    /**
      * Get the password for the user.
      */
     public function getAuthPassword()

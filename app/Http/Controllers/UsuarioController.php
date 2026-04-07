@@ -60,7 +60,15 @@ class UsuarioController extends Controller
     {
         $this->authorize('update', $usuario);
 
-        return view('usuarios.edit', compact('usuario'));
+        $rolesDisponibles = auth()->user()->esGerente()
+            ? ['cliente' => 'Cliente']
+            : [
+                'administrador' => 'Administrador',
+                'gerente' => 'Gerente',
+                'cliente' => 'Cliente',
+            ];
+
+        return view('usuarios.edit', compact('usuario', 'rolesDisponibles'));
     }
 
     public function update(UpdateUsuarioRequest $request, Usuario $usuario)
