@@ -36,8 +36,8 @@ class VentaController extends Controller
 
         DB::beginTransaction();
 
-        try {
-            $total = $producto->precio * $cantidad;
+        // Descontar existencia
+        $producto->decrement('existencia', 1);
 
             // Crear venta
             $venta = Venta::create([

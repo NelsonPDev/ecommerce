@@ -63,7 +63,7 @@ class UsuarioPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, User $model): bool
+    public function restore(Usuario $user, Usuario $model): bool
     {
         return false;
     }
@@ -71,7 +71,7 @@ class UsuarioPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, User $model): bool
+    public function forceDelete(Usuario $user, Usuario $model): bool
     {
         return false;
     }

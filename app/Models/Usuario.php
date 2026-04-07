@@ -80,7 +80,39 @@ class Usuario extends Authenticatable
     }
 
     /**
-     * Relación: Un usuario tiene muchas ventas
+     * Relación: Un usuario tiene muchos productos (como vendedor)
+     */
+    public function productos(): HasMany
+    {
+        return $this->hasMany(Producto::class, 'usuario_id');
+    }
+
+    /**
+     * Relación: Un usuario tiene muchas ventas como cliente
+     */
+    public function ventasComoCliente(): HasMany
+    {
+        return $this->hasMany(Venta::class, 'cliente_id');
+    }
+
+    /**
+     * Relación: Un usuario tiene muchas ventas como vendedor
+     */
+    public function ventasComoVendedor(): HasMany
+    {
+        return $this->hasMany(Venta::class, 'vendedor_id');
+    }
+
+    /**
+     * Relación hasManyThrough: Usuario -> Productos -> Categorías
+     */
+    public function categorias()
+    {
+        return $this->hasManyThrough(Categoria::class, Producto::class, 'usuario_id', 'id', 'id', 'categoria_id');
+    }
+
+    /**
+     * Relación: Un usuario tiene muchas ventas (genérica, si es necesaria)
      */
     public function ventas(): HasMany
     {

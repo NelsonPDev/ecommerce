@@ -18,9 +18,11 @@ class DashboardController extends Controller
             case 'administrador':
                 return view('dashboards.administrador');
             case 'gerente':
+                \Illuminate\Support\Facades\Log::info('Redirigiendo a dashboard gerente');
                 return view('dashboards.gerente');
             case 'cliente':
             default:
+                \Illuminate\Support\Facades\Log::info('Redirigiendo a dashboard cliente');
                 return view('dashboards.cliente');
         }
     }

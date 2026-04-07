@@ -1,17 +1,36 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
+@section('content')
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Dashboard - {{ auth()->user()->rol }}</h1>
+            <p>Bienvenido, {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</p>
+
+            @if(auth()->user()->rol === 'administrador')
+                <div class="alert alert-info">
+                    <h4>Panel de Administrador</h4>
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-primary">Gestionar Usuarios</a>
+                    <a href="{{ route('productos.create') }}" class="btn btn-success">Crear Producto</a>
                 </div>
-            </div>
+            @elseif(auth()->user()->rol === 'gerente')
+                <div class="alert alert-warning">
+                    <h4>Panel de Gerente</h4>
+                    <a href="{{ route('productos.create') }}" class="btn btn-success">Crear Producto</a>
+                </div>
+            @else
+                <div class="alert alert-success">
+                    <h4>Panel de Cliente</h4>
+                    <a href="{{ route('productos.index') }}" class="btn btn-primary">Ver Productos</a>
+                    <a href="{{ route('ventas.index') }}" class="btn btn-info">Mis Compras</a>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+            </form>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

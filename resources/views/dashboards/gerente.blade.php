@@ -21,7 +21,14 @@
                             <h4 class="text-xl font-bold mb-2">Gestión de Usuarios</h4>
                             <p>Ver, crear, editar y eliminar usuarios del sistema.</p>
                         </a>
-                        <!-- Aquí puedes agregar más tarjetas para otras funcionalidades -->
+                        <a href="{{ route('productos.index') }}" class="bg-green-600 text-white p-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300">
+                            <h4 class="text-xl font-bold mb-2">Gestión de Productos</h4>
+                            <p>Ver, crear, editar y eliminar productos.</p>
+                        </a>
+                        <a href="{{ route('productos.create') }}" class="bg-purple-600 text-white p-6 rounded-lg shadow-md hover:bg-purple-700 transition duration-300">
+                            <h4 class="text-xl font-bold mb-2">Crear Producto</h4>
+                            <p>Agregar nuevos productos al catálogo.</p>
+                        </a>
                     </div>
                 </div>
             </div>

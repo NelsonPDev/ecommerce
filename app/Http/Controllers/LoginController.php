@@ -15,7 +15,18 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        return view('login');
+        // Si el usuario ya está autenticado, redirigirlo al dashboard
+        if (Auth::check()) {
+            Log::info('Usuario ya autenticado, redirigiendo al dashboard');
+            return redirect()->route('dashboard', ['t' => time()]);
+        }
+
+        return response()->view('login')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0')
+            ->header('X-Frame-Options', 'DENY')
+            ->header('X-Content-Type-Options', 'nosniff');
     }
 
     /**
@@ -28,9 +39,13 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ], [
-            'email.required' => 'El email es obligatorio',
-            'email.email' => 'El email debe ser válido',
+            'correo.required' => 'El correo es obligatorio',
+            'correo.email' => 'El correo debe ser válido',
             'password.required' => 'La contraseña es obligatoria',
+        ]);
+Log::info('Intentando login con:', [
+            'correo' => $credentials['correo'],
+            'password_provided' => !empty($credentials['password'])
         ]);
 
         $credentials = [
@@ -50,14 +65,16 @@ class LoginController extends Controller
             return redirect('/productos')->with('success', 'Bienvenido!');
         }
 
+        Log::warning('Login fallido para usuario:', ['correo' => $credentials['correo']]);
+
         // Si falla la autenticación
         Log::channel('autenticacion')->warning('Login incorrecto', [
             'correo' => $request->email,
             'ip' => $request->ip(),
         ]);
         return back()->withErrors([
-            'email' => 'Las credenciales no coinciden con nuestros registros.',
-        ])->onlyInput('email');
+            'correo' => 'Las credenciales no coinciden con nuestros registros.',
+        ])->onlyInput('correo');
     }
 
     /**

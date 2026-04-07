@@ -56,16 +56,16 @@ class ProductoPolicy
     /**
      * Determine whether the user can buy a product.
      */
-    public function comprar(User $user): bool
+    public function comprar(Usuario $user): bool
     {
         // Solo clientes pueden comprar
-        return $user->role === 'cliente';
+        return $user->rol === 'cliente';
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Producto $producto): bool
+    public function restore(Usuario $user, Producto $producto): bool
     {
         return false;
     }
@@ -73,7 +73,7 @@ class ProductoPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Producto $producto): bool
+    public function forceDelete(Usuario $user, Producto $producto): bool
     {
         return false;
     }

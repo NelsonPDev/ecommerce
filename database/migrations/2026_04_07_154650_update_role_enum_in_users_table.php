@@ -11,18 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['administrador', 'gerente', 'cliente'])->change();
-        });
+        // Ya manejado en rename migration
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['cliente', 'empleado', 'gerente'])->change();
-        });
+        // Ya manejado en rename migration
     }
 };

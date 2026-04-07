@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Iniciar Sesión - TechStore</title>
     @vite('resources/css/app.css')
     <style>
@@ -134,9 +137,9 @@
             @csrf
 
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
-                @error('email')
+                <label for="correo">Correo</label>
+                <input type="email" id="correo" name="correo" value="{{ old('correo') }}" required autofocus>
+                @error('correo')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
@@ -156,5 +159,73 @@
             <p>¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate aquí</a></p>
         </div>
     </div>
+
+    <script>
+        // Función para forzar redirección con timestamp único
+        function forceRedirect() {
+            var timestamp = new Date().getTime();
+            var dashboardUrl = '{{ route("dashboard") }}' + '?t=' + timestamp;
+            console.log('Forzando redirección a:', dashboardUrl);
+            window.location.replace(dashboardUrl);
+        }
+
+        // Verificar inmediatamente si hay mensaje de éxito
+        @if(session('success'))
+            console.log('Mensaje de éxito detectado, redirigiendo...');
+            forceRedirect();
+        @endif
+
+        // Prevenir cache agresivamente
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+
+        // Limpiar todo tipo de cache
+        window.addEventListener('load', function() {
+            // Limpiar caches del navegador
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+
+            // Limpiar localStorage y sessionStorage relacionados con login
+            try {
+                localStorage.removeItem('login_cache');
+                sessionStorage.removeItem('login_cache');
+            } catch (e) {
+                console.log('Error limpiando storage:', e);
+            }
+        });
+
+        // Prevenir navegación hacia atrás al login cuando ya estamos autenticados
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Página cargada desde cache, forzar recarga
+                window.location.reload();
+            }
+        });
+
+        // Verificación adicional cada 100ms por 2 segundos
+        var checkCount = 0;
+        var checkInterval = setInterval(function() {
+            @if(session('success'))
+                console.log('Verificación periódica: mensaje de éxito encontrado');
+                clearInterval(checkInterval);
+                forceRedirect();
+            @endif
+
+            checkCount++;
+            if (checkCount > 20) { // 2 segundos
+                clearInterval(checkInterval);
+            }
+        }, 100);
+    </script>
 </body>
 </html>

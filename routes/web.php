@@ -28,12 +28,17 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 });
 
-Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('test.auth')->name('logout');
 
 // Rutas autenticadas
-Route::middleware('auth')->group(function () {
+Route::middleware('test.auth')->group(function () {
     // Dashboard dinámico según rol
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Ruta de prueba para verificar middleware
+    Route::get('/test-auth', function() {
+        return 'Usuario autenticado: ' . Auth::user()->correo;
+    })->middleware('test.auth')->name('test.auth');
     
     // Gestión de perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

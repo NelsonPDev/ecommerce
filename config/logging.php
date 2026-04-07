@@ -148,6 +148,24 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'autenticacion' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/autenticacion.log'),
+            'level' => 'info',
+        ],
+
+        'productos' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/productos.log'),
+            'level' => 'info',
+        ],
+
+        'ventas' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/ventas.log'),
+            'level' => 'info',
+        ],
+
     ],
 
 ];
