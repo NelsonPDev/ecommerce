@@ -30,12 +30,15 @@
     <section class="mt-8 grid gap-6 {{ $esCliente ? '' : 'md:grid-cols-2' }}">
         @if ($esAdministrador)
             <div class="rounded-2xl bg-white p-6 shadow-sm">
-                <h2 class="text-xl font-bold">Panel de administrador</h2>
-                <p class="mt-3 text-sm text-slate-600">Acciones principales: crear usuarios, editar usuarios y eliminar usuarios.</p>
-                <div class="mt-4 flex flex-wrap gap-3">
-                    <a href="{{ route('usuarios.index') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Administrar usuarios</a>
-                    <a href="{{ route('usuarios.create') }}" class="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white">Crear usuario</a>
-                </div>
+                <h2 class="text-xl font-bold">Administrador</h2>
+                <p class="mt-3 text-sm text-slate-600">CRUD completo para:</p>
+                <ul class="mt-3 ml-5 list-disc space-y-2 text-sm text-slate-600">
+                    <li>Usuarios</li>
+                    <li>Productos</li>
+                    <li>Categorías</li>
+                    <li>Ventas</li>
+                </ul>
+                <p class="mt-4 text-sm text-slate-500">Como administrador puedes crear usuarios con cualquier rol y gestionar productos, categorías y ventas.</p>
             </div>
         @endif
 

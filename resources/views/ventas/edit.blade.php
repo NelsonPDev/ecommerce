@@ -5,20 +5,52 @@
         <h1 class="text-3xl font-bold">Editar venta</h1>
         <div class="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
             Producto: <strong>{{ $venta->producto->nombre }}</strong><br>
-            Cliente: <strong>{{ $venta->cliente->nombre }} {{ $venta->cliente->apellidos }}</strong><br>
-            Vendedor: <strong>{{ $venta->vendedor->nombre }} {{ $venta->vendedor->apellidos }}</strong>
+            Cliente: <strong>{{ $venta->cliente->nombre }} {{ $venta->cliente->apellidos }}</strong>
         </div>
 
         <form method="POST" action="{{ route('ventas.update', $venta) }}" class="mt-8 grid gap-5 md:grid-cols-2">
             @csrf
             @method('PUT')
             <div>
+                <label class="mb-2 block text-sm font-semibold">Cantidad</label>
+                <input id="cantidadInput" name="cantidad" type="number" min="1" value="{{ old('cantidad', $venta->cantidad) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                @error('cantidad')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Vendedor</label>
+                <select name="vendedor_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Selecciona un vendedor</option>
+                    @php
+                        $vendedores = App\Models\Usuario::where(function ($query) {
+                            $query->where('rol', 'administrador')
+                                  ->orWhere('rol', 'gerente');
+                        })->get();
+                    @endphp
+                    @foreach ($vendedores as $vendedor)
+                        <option value="{{ $vendedor->id }}" @selected(old('vendedor_id', $venta->vendedor_id) == $vendedor->id)>
+                            {{ $vendedor->nombre }} {{ $vendedor->apellidos }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('vendedor_id')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
                 <label class="mb-2 block text-sm font-semibold">Fecha</label>
                 <input name="fecha" type="date" value="{{ old('fecha', $venta->fecha->format('Y-m-d')) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                @error('fecha')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold">Total</label>
-                <input name="total" type="number" min="0" step="0.01" value="{{ old('total', $venta->total) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                <input id="totalInput" name="total" type="number" min="0" step="0.01" value="{{ old('total', $venta->total) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                @error('total')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
             <div class="md:col-span-2 flex flex-wrap gap-3">
                 <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Actualizar</button>
@@ -36,4 +68,18 @@
             </form>
         @endcan
     </section>
+
+    <script>
+        const precioUnitario = {{ $venta->producto->precio }};
+        const cantidadInput = document.getElementById('cantidadInput');
+        const totalInput = document.getElementById('totalInput');
+
+        function actualizarTotal() {
+            const cantidad = parseInt(cantidadInput.value) || 0;
+            const total = cantidad * precioUnitario;
+            totalInput.value = total.toFixed(2);
+        }
+
+        cantidadInput.addEventListener('input', actualizarTotal);
+    </script>
 @endsection

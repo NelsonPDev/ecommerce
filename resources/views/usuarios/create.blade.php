@@ -27,6 +27,7 @@
             </div>
             <div class="md:col-span-2">
                 <label class="mb-2 block text-sm font-semibold">Rol</label>
+                <p class="mb-3 text-sm text-slate-500">Como administrador puedes asignar cualquier rol al usuario.</p>
                 <select name="rol" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
                     <option value="">Selecciona un rol</option>
                     <option value="administrador" @selected(old('rol') === 'administrador')>Administrador</option>

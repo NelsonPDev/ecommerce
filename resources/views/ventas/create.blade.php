@@ -16,6 +16,19 @@
                     @endforeach
                 </select>
             </div>
+            @if (auth()->user()->esAdministrador())
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Cliente</label>
+                    <select name="cliente_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                        <option value="">Selecciona un cliente</option>
+                        @foreach ($clientes as $cliente)
+                            <option value="{{ $cliente->id }}" @selected(old('cliente_id') == $cliente->id)>
+                                {{ $cliente->nombre }} {{ $cliente->apellidos }} ({{ $cliente->correo }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Cantidad</label>

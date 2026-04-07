@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Venta;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVentaRequest extends FormRequest
 {
@@ -18,6 +19,11 @@ class StoreVentaRequest extends FormRequest
             'producto_id' => 'required|exists:productos,id',
             'cantidad' => 'required|integer|min:1',
             'fecha' => 'nullable|date',
+            'cliente_id' => [
+                Rule::requiredIf($this->user()->esAdministrador()),
+                'nullable',
+                Rule::exists('usuarios', 'id')->where('rol', 'cliente'),
+            ],
         ];
     }
 }

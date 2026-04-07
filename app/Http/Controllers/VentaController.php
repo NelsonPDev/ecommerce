@@ -7,6 +7,7 @@ use App\Http\Requests\ProcessCheckoutRequest;
 use App\Http\Requests\StoreVentaRequest;
 use App\Http\Requests\UpdateVentaRequest;
 use App\Models\Producto;
+use App\Models\Usuario;
 use App\Models\Venta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,14 @@ class VentaController extends Controller
     {
         $this->authorize('create', Venta::class);
 
-        return redirect()->route('carrito.index');
+        $productos = Producto::with('usuario')->get();
+        $clientes = [];
+
+        if (auth()->user()->esAdministrador()) {
+            $clientes = Usuario::where('rol', 'cliente')->get();
+        }
+
+        return view('ventas.create', compact('productos', 'clientes'));
     }
 
     public function store(StoreVentaRequest $request)
@@ -49,6 +57,9 @@ class VentaController extends Controller
         }
 
         $total = $producto->precio * $cantidad;
+        $clienteId = auth()->user()->esAdministrador()
+            ? $request->validated('cliente_id') ?? $usuario->id
+            : $usuario->id;
 
         try {
             DB::beginTransaction();
@@ -56,7 +67,7 @@ class VentaController extends Controller
             $venta = Venta::create([
                 'producto_id' => $producto->id,
                 'vendedor_id' => $producto->usuario_id,
-                'cliente_id' => $usuario->id,
+                'cliente_id' => $clienteId,
                 'fecha' => $request->validated('fecha') ?? now()->toDateString(),
                 'cantidad' => $cantidad,
                 'total' => $total,
@@ -68,7 +79,7 @@ class VentaController extends Controller
 
             Log::channel('ventas')->info('Venta creada', [
                 'venta_id' => $venta->id,
-                'cliente_id' => $usuario->id,
+                'cliente_id' => $clienteId,
                 'vendedor_id' => $producto->usuario_id,
                 'producto_id' => $producto->id,
                 'total' => $total,

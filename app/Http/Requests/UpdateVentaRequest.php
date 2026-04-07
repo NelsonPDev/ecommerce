@@ -15,6 +15,8 @@ class UpdateVentaRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'cantidad' => 'required|integer|min:1',
+            'vendedor_id' => 'required|exists:usuarios,id',
             'fecha' => 'required|date',
             'total' => 'required|numeric|min:0',
         ];

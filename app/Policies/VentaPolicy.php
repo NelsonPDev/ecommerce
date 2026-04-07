@@ -23,7 +23,7 @@ class VentaPolicy
 
     public function create(Usuario $user): bool
     {
-        return $user->esCliente();
+        return $user->esCliente() || $user->esAdministrador();
     }
 
     public function update(Usuario $user, Venta $venta): bool
