@@ -37,9 +37,6 @@ class UsuarioFactory extends Factory
             'rol' => $this->faker->randomElement(['cliente', 'gerente']),
         ];
     }
-            'rol' => 'cliente', // Por defecto cliente
-        ];
-    }
 
     /**
      * Estado para administrador
