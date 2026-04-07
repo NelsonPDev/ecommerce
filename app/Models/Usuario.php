@@ -17,7 +17,7 @@ class Usuario extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'usuarios';
 
     /**
      * The attributes that are mass assignable.
@@ -107,46 +107,6 @@ class Usuario extends Authenticatable
      * Relación hasManyThrough: Usuario -> Productos -> Categorías
      */
     public function categorias()
-    {
-        return $this->hasManyThrough(Categoria::class, Producto::class, 'usuario_id', 'id', 'id', 'categoria_id');
-    }
-
-    /**
-     * Relación: Un usuario tiene muchas ventas (genérica, si es necesaria)
-     */
-    public function ventas(): HasMany
-    {
-        return $this->hasMany(Venta::class, 'usuario_id');
-    }
-
-    /**
-     * Relación: Un usuario tiene muchas ventas como cliente
-     */
-    public function ventasComoCliente(): HasMany
-    {
-        return $this->hasMany(Venta::class, 'cliente_id');
-    }
-
-    /**
-     * Relación: Un usuario tiene muchas ventas como vendedor
-     */
-    public function ventasComoVendedor(): HasMany
-    {
-        return $this->hasMany(Venta::class, 'vendedor_id');
-    }
-
-    /**
-     * Relación: Un usuario tiene muchos productos
-     */
-    public function productos(): HasMany
-    {
-        return $this->hasMany(Producto::class);
-    }
-
-    /**
-     * Relación hasManyThrough: Un usuario tiene muchas categorías a través de productos
-     */
-    public function categorias(): HasManyThrough
     {
         return $this->hasManyThrough(Categoria::class, Producto::class, 'usuario_id', 'id', 'id', 'categoria_id')
                     ->distinct();
