@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Usuario;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -14,48 +14,53 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crear usuario Gerente
-        User::create([
-            'name' => 'Juan García',
-            'email' => 'gerente@techstore.com',
-            'password' => Hash::make('password123'),
-            'role' => 'gerente',
-            'email_verified_at' => now(),
+        // Crear usuario Administrador
+        Usuario::create([
+            'nombre' => 'Admin',
+            'apellidos' => 'Sistema',
+            'correo' => 'admin@admin.com',
+            'clave' => Hash::make('123456'),
+            'rol' => 'administrador',
+            'correo_verified_at' => now(),
         ]);
 
-        // Crear usuario Empleado
-        User::create([
-            'name' => 'María López',
-            'email' => 'empleado@techstore.com',
-            'password' => Hash::make('password123'),
-            'role' => 'empleado',
-            'email_verified_at' => now(),
+        // Crear usuario Gerente
+        Usuario::create([
+            'nombre' => 'Juan',
+            'apellidos' => 'García',
+            'correo' => 'gerente@gerente.com',
+            'clave' => Hash::make('123456'),
+            'rol' => 'gerente',
+            'correo_verified_at' => now(),
         ]);
 
         // Crear usuario Cliente
-        User::create([
-            'name' => 'Carlos Martínez',
-            'email' => 'cliente@techstore.com',
-            'password' => Hash::make('password123'),
-            'role' => 'cliente',
-            'email_verified_at' => now(),
+        Usuario::create([
+            'nombre' => 'María',
+            'apellidos' => 'López',
+            'correo' => 'cliente@cliente.com',
+            'clave' => Hash::make('123456'),
+            'rol' => 'cliente',
+            'correo_verified_at' => now(),
         ]);
 
         // Crear más clientes adicionales
-        User::create([
-            'name' => 'Ana Rodríguez',
-            'email' => 'ana@ejemplo.com',
-            'password' => Hash::make('password123'),
-            'role' => 'cliente',
-            'email_verified_at' => now(),
+        Usuario::create([
+            'nombre' => 'Carlos',
+            'apellidos' => 'Martínez',
+            'correo' => 'carlos@carlos.com',
+            'clave' => Hash::make('123456'),
+            'rol' => 'cliente',
+            'correo_verified_at' => now(),
         ]);
 
-        User::create([
-            'name' => 'Pedro Sánchez',
-            'email' => 'pedro@ejemplo.com',
-            'password' => Hash::make('password123'),
-            'role' => 'cliente',
-            'email_verified_at' => now(),
+        Usuario::create([
+            'nombre' => 'Pedro',
+            'apellidos' => 'Sánchez',
+            'correo' => 'pedro@pedro.com',
+            'clave' => Hash::make('123456'),
+            'rol' => 'cliente',
+            'correo_verified_at' => now(),
         ]);
     }
 }

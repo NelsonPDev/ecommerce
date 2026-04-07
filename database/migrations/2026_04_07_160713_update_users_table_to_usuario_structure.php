@@ -15,6 +15,7 @@ return new class extends Migration
             // Renombrar campos
             $table->renameColumn('name', 'nombre');
             $table->renameColumn('email', 'correo');
+            $table->renameColumn('email_verified_at', 'correo_verified_at');
             $table->renameColumn('password', 'clave');
 
             // Agregar campo apellidos
@@ -40,6 +41,7 @@ return new class extends Migration
             // Revertir cambios
             $table->renameColumn('nombre', 'name');
             $table->renameColumn('correo', 'email');
+            $table->renameColumn('correo_verified_at', 'email_verified_at');
             $table->renameColumn('clave', 'password');
             $table->dropColumn('apellidos');
             $table->renameColumn('rol', 'role');

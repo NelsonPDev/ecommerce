@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Producto extends Model
@@ -15,8 +16,8 @@ class Producto extends Model
         'nombre',
         'descripcion',
         'precio',
-        'stock',
-        'categoria_id',
+        'existencia',
+        'usuario_id',
     ];
 
     protected $casts = [
@@ -24,11 +25,19 @@ class Producto extends Model
     ];
 
     /**
-     * Relación: Un producto pertenece a una categoría
+     * Relación: Un producto pertenece a un usuario (vendedor)
      */
-    public function categoria(): BelongsTo
+    public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Categoria::class);
+        return $this->belongsTo(Usuario::class);
+    }
+
+    /**
+     * Relación: Un producto pertenece a muchas categorías (muchos a muchos)
+     */
+    public function categorias(): BelongsToMany
+    {
+        return $this->belongsToMany(Categoria::class, 'categoria_producto');
     }
 
     /**

@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Usuario;
 use App\Models\Producto;
+use App\Models\Venta;
 use App\Policies\UsuarioPolicy;
 use App\Policies\ProductoPolicy;
+use App\Policies\VentaPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     protected $policies = [
         Usuario::class => UsuarioPolicy::class,
         Producto::class => ProductoPolicy::class,
+        Venta::class => VentaPolicy::class,
     ];
 
     /**
@@ -46,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('es-cliente', function (Usuario $user) {
-            return $user->role === 'cliente';
+            return $user->rol === 'cliente';
         });
     }
 

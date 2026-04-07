@@ -10,7 +10,7 @@
                         {{ session('success') }}
                     </div>
                 @endif
-                <h2 class="text-3xl font-bold mb-6">Dashboard de Gerente</h2>
+                <h2 class="text-3xl font-bold mb-6">Dashboard de Administrador</h2>
                 <p class="text-lg text-gray-700">Usuario: <strong>{{ Auth::user()->nombre }} {{ Auth::user()->apellidos }}</strong></p>
                 <p class="text-lg text-gray-700">Rol: <strong>{{ Auth::user()->rol }}</strong></p>
 
@@ -20,6 +20,10 @@
                         <a href="{{ route('usuarios.index') }}" class="bg-blue-600 text-white p-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
                             <h4 class="text-xl font-bold mb-2">Gestión de Usuarios</h4>
                             <p>Ver, crear, editar y eliminar usuarios del sistema.</p>
+                        </a>
+                        <a href="{{ route('productos.index') }}" class="bg-green-600 text-white p-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300">
+                            <h4 class="text-xl font-bold mb-2">Gestión de Productos</h4>
+                            <p>Ver, crear, editar y eliminar productos.</p>
                         </a>
                         <!-- Aquí puedes agregar más tarjetas para otras funcionalidades -->
                     </div>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use App\Models\Usuario;
 
 class RegisterController extends Controller
 {
@@ -25,10 +25,12 @@ class RegisterController extends Controller
         // Validar datos
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
+            'apellidos' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:users,correo',
             'password' => 'required|string|min:8|confirmed',
         ], [
             'name.required' => 'El nombre es obligatorio',
+            'apellidos.max' => 'Los apellidos no pueden exceder 255 caracteres',
             'email.required' => 'El email es obligatorio',
             'email.unique' => 'Este email ya está registrado',
             'password.required' => 'La contraseña es obligatoria',
@@ -37,16 +39,14 @@ class RegisterController extends Controller
         ]);
 
         // Crear usuario
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'cliente', // Rol por defecto
+        Usuario::create([
+            'nombre' => $validated['name'],
+            'apellidos' => $validated['apellidos'] ?? '',
+            'correo' => $validated['email'],
+            'clave' => Hash::make($validated['password']),
+            'rol' => 'cliente', // Rol por defecto
         ]);
 
-        // Autologin
-        Auth::login($user);
-
-        return redirect()->route('dashboard')->with('success', 'Registro exitoso!');
+        return redirect()->route('login')->with('success', 'Cuenta creada exitosamente. Inicia sesión.');
     }
 }

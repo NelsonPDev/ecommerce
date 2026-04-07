@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use App\Models\Categoria;
-use App\Http\Requests\StoreProductoRequest;
+use App\Http\Requests\UpdateProductoRequest;
 use Illuminate\Support\Facades\Log;
 
 class ProductoController extends Controller
@@ -14,9 +14,9 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        Log::info('Usuario ' . (auth()->user()?->email ?? 'anónimo') . ' visualizó catálogo de productos');
+        Log::info('Usuario ' . (auth()->user()?->correo ?? 'anónimo') . ' visualizó catálogo de productos');
 
-        $productos = Producto::with('categoria')->paginate(12);
+        $productos = Producto::with('categorias')->paginate(12);
         return view('productos.index', compact('productos'));
     }
 
@@ -25,7 +25,7 @@ class ProductoController extends Controller
      */
     public function show(Producto $producto)
     {
-        Log::info('Producto ' . $producto->nombre . ' consultado por ' . (auth()->user()?->email ?? 'anónimo'));
+        Log::info('Producto ' . $producto->nombre . ' consultado por ' . (auth()->user()?->correo ?? 'anónimo'));
         return view('productos.show', compact('producto'));
     }
 
@@ -44,11 +44,17 @@ class ProductoController extends Controller
      */
     public function store(StoreProductoRequest $request)
     {
-        Log::info('Intento de crear producto: ' . $request->nombre . ' por ' . auth()->user()->email);
+        Log::channel('productos')->info('Producto creado', [
+            'usuario_id' => auth()->id(),
+            'nombre' => $request->nombre,
+            'precio' => $request->precio,
+        ]);
 
-        $producto = Producto::create($request->validated());
+        $data = $request->validated();
+        $data['usuario_id'] = auth()->id();
 
-        Log::info('Producto creado: ' . $producto->nombre);
+        $producto = Producto::create($data);
+        $producto->categorias()->attach($request->categorias);
 
         return redirect()->route('productos.index')->with('success', 'Producto creado exitosamente');
     }
@@ -66,21 +72,16 @@ class ProductoController extends Controller
     /**
      * Actualizar producto (solo administrador)
      */
-    public function update(\Illuminate\Http\Request $request, Producto $producto)
+    public function update(UpdateProductoRequest $request, Producto $producto)
     {
-        $this->authorize('update', $producto);
+        Log::channel('productos')->info('Producto actualizado', [
+            'usuario_id' => auth()->id(),
+            'producto_id' => $producto->id,
+            'nombre' => $request->nombre,
+        ]);
 
-        Log::info('Intento de editar producto: ' . $producto->nombre . ' por ' . auth()->user()->email);
-
-        $producto->update($request->validate([
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'categoria_id' => 'required|exists:categorias,id',
-        ]));
-
-        Log::info('Producto actualizado: ' . $producto->nombre);
+        $producto->update($request->validated());
+        $producto->categorias()->sync($request->categorias);
 
         return redirect()->route('productos.index')->with('success', 'Producto actualizado');
     }
@@ -92,7 +93,11 @@ class ProductoController extends Controller
     {
         $this->authorize('delete', $producto);
 
-        Log::info('Producto ' . $producto->nombre . ' eliminado por ' . auth()->user()->email);
+        Log::channel('productos')->info('Producto eliminado', [
+            'usuario_id' => auth()->id(),
+            'producto_id' => $producto->id,
+            'nombre' => $producto->nombre,
+        ]);
 
         $producto->delete();
 

@@ -23,11 +23,20 @@ class UsuarioFactory extends Factory
      */
     public function definition(): array
     {
+        $nombres = ['Juan', 'Mario', 'Maria', 'Pedro'];
+        $apellidos = ['Lopez', 'Sanchez', 'Hernandez', 'Martinez'];
+
+        $nombre = $this->faker->randomElement($nombres);
+        $apellido = $this->faker->randomElement($apellidos);
+
         return [
-            'nombre' => fake()->firstName(),
-            'apellidos' => fake()->lastName(),
-            'correo' => fake()->unique()->safeEmail(),
-            'clave' => static::$password ??= Hash::make('password'),
+            'nombre' => $nombre,
+            'apellidos' => $apellido,
+            'correo' => strtolower(substr($nombre, 0, 1) . $apellido) . '@tuxtla.tecnm.mx',
+            'clave' => Hash::make('123'),
+            'rol' => $this->faker->randomElement(['cliente', 'gerente']),
+        ];
+    }
             'rol' => 'cliente', // Por defecto cliente
         ];
     }

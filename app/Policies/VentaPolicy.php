@@ -2,28 +2,29 @@
 
 namespace App\Policies;
 
-use App\Models\Producto;
 use App\Models\Usuario;
+use App\Models\Venta;
 use Illuminate\Auth\Access\Response;
 
-class ProductoPolicy
+class VentaPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(Usuario $user): bool
     {
-        // Todos pueden ver productos
-        return true;
+        return in_array($user->rol, ['administrador', 'gerente']);
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(Usuario $user, Producto $producto): bool
+    public function view(Usuario $user, Venta $venta): bool
     {
-        // Todos pueden ver productos
-        return true;
+        if (in_array($user->rol, ['administrador', 'gerente'])) {
+            return true;
+        }
+        return $user->rol === 'cliente' && $venta->cliente_id === $user->id;
     }
 
     /**
@@ -31,41 +32,37 @@ class ProductoPolicy
      */
     public function create(Usuario $user): bool
     {
-        // Solo administrador puede crear productos
-        return $user->rol === 'administrador';
+        return $user->rol === 'cliente';
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(Usuario $user, Producto $producto): bool
+    public function update(Usuario $user, Venta $venta): bool
     {
-        // Solo administrador puede editar productos
         return $user->rol === 'administrador';
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(Usuario $user, Producto $producto): bool
+    public function delete(Usuario $user, Venta $venta): bool
     {
-        // Solo administrador puede eliminar productos
         return $user->rol === 'administrador';
     }
 
     /**
-     * Determine whether the user can buy a product.
+     * Determine whether the user can cancel the sale.
      */
-    public function comprar(User $user): bool
+    public function cancel(Usuario $user, Venta $venta): bool
     {
-        // Solo clientes pueden comprar
-        return $user->role === 'cliente';
+        return $user->rol === 'administrador' || ($user->rol === 'cliente' && $venta->usuario_id === $user->id);
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Producto $producto): bool
+    public function restore(User $user, Venta $venta): bool
     {
         return false;
     }
@@ -73,7 +70,7 @@ class ProductoPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Producto $producto): bool
+    public function forceDelete(User $user, Venta $venta): bool
     {
         return false;
     }

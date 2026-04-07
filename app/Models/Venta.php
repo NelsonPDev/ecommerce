@@ -11,26 +11,17 @@ class Venta extends Model
     use HasFactory;
 
     protected $fillable = [
-        'usuario_id',
         'producto_id',
-        'cantidad',
-        'precio_unitario',
+        'vendedor_id',
+        'cliente_id',
+        'fecha',
         'total',
-        'estado',
     ];
 
     protected $casts = [
-        'precio_unitario' => 'decimal:2',
         'total' => 'decimal:2',
+        'fecha' => 'date',
     ];
-
-    /**
-     * Relación: Una venta pertenece a un usuario
-     */
-    public function usuario(): BelongsTo
-    {
-        return $this->belongsTo(Usuario::class);
-    }
 
     /**
      * Relación: Una venta pertenece a un producto
@@ -38,5 +29,21 @@ class Venta extends Model
     public function producto(): BelongsTo
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    /**
+     * Relación: Una venta pertenece a un cliente (usuario)
+     */
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'cliente_id');
+    }
+
+    /**
+     * Relación: Una venta pertenece a un vendedor (usuario)
+     */
+    public function vendedor(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'vendedor_id');
     }
 }

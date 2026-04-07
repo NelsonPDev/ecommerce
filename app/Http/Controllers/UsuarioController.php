@@ -55,7 +55,7 @@ class UsuarioController extends Controller
     /**
      * Mostrar formulario de edición
      */
-    public function edit(User $usuario)
+    public function edit(Usuario $usuario)
     {
         $this->authorize('update', $usuario);
         return view('usuarios.edit', compact('usuario'));
@@ -64,9 +64,9 @@ class UsuarioController extends Controller
     /**
      * Actualizar usuario
      */
-    public function update(UpdateUsuarioRequest $request, User $usuario)
+    public function update(UpdateUsuarioRequest $request, Usuario $usuario)
     {
-        Log::info('Intento de editar usuario: ' . $usuario->email . ' por ' . auth()->user()->email);
+        Log::info('Intento de editar usuario: ' . $usuario->correo . ' por ' . auth()->user()->correo);
 
         $data = $request->only('nombre', 'apellidos', 'correo', 'rol');
 
@@ -84,11 +84,11 @@ class UsuarioController extends Controller
     /**
      * Eliminar usuario (solo administrador)
      */
-    public function destroy(User $usuario)
+    public function destroy(Usuario $usuario)
     {
         $this->authorize('delete', $usuario);
 
-        Log::info('Usuario ' . $usuario->email . ' eliminado por ' . auth()->user()->email);
+        Log::info('Usuario ' . $usuario->correo . ' eliminado por ' . auth()->user()->correo);
 
         $usuario->delete();
 

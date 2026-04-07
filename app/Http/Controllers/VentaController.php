@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Venta;
 use App\Models\Producto;
-use App\Http\Requests\ComprarProductoRequest;
+use App\Http\Requests\StoreVentaRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -15,28 +15,25 @@ class VentaController extends Controller
      */
     public function index()
     {
-        $ventas = auth()->user()->ventas()->with('producto')->paginate(10);
+        $ventas = auth()->user()->ventasComoCliente()->with(['producto', 'vendedor'])->paginate(10);
         return view('ventas.index', compact('ventas'));
     }
 
     /**
      * Procesar compra de producto (solo cliente)
      */
-    public function comprar(ComprarProductoRequest $request)
+    public function comprar(StoreVentaRequest $request)
     {
-        Log::info('Intento de compra por ' . auth()->user()->email);
+        $this->authorize('create', Venta::class);
 
         $producto = Producto::findOrFail($request->producto_id);
-        $cantidad = $request->cantidad;
+        $cantidad = $request->cantidad ?? 1; // Default to 1 if not provided
 
-        // Validar stock
-        if ($producto->stock < $cantidad) {
-            Log::warning('Stock insuficiente para ' . $producto->nombre . ' - solicitado: ' . $cantidad . ', disponible: ' . $producto->stock);
-
-            return back()->with('error', 'Stock insuficiente para este producto');
+        // Validar existencia
+        if ($producto->existencia < $cantidad) {
+            return back()->with('error', 'Existencia insuficiente para este producto');
         }
 
-        // Usar transacción para asegurar integridad
         DB::beginTransaction();
 
         try {
@@ -44,20 +41,25 @@ class VentaController extends Controller
 
             // Crear venta
             $venta = Venta::create([
-                'usuario_id' => auth()->id(),
                 'producto_id' => $producto->id,
-                'cantidad' => $cantidad,
-                'precio_unitario' => $producto->precio,
+                'vendedor_id' => $producto->usuario_id,
+                'cliente_id' => auth()->id(),
+                'fecha' => now()->toDateString(),
                 'total' => $total,
-                'estado' => 'completada',
             ]);
 
-            // Descontar stock
-            $producto->decrement('stock', $cantidad);
+            // Descontar existencia
+            $producto->decrement('existencia', $cantidad);
 
             DB::commit();
 
-            Log::info('Venta exitosa: Usuario=' . auth()->user()->email . ', Producto=' . $producto->nombre . ', Cantidad=' . $cantidad . ', Total=' . $total);
+            Log::channel('ventas')->info('Venta creada', [
+                'venta_id' => $venta->id,
+                'cliente_id' => auth()->id(),
+                'vendedor_id' => $producto->usuario_id,
+                'producto_id' => $producto->id,
+                'total' => $total,
+            ]);
 
             return redirect()->route('ventas.index')->with('success', 'Compra realizada exitosamente');
 
@@ -74,12 +76,9 @@ class VentaController extends Controller
      */
     public function show(Venta $venta)
     {
-        // Verificar que la venta pertenece al usuario actual
-        if ($venta->usuario_id !== auth()->id()) {
-            abort(403, 'No autorizado');
-        }
+        $this->authorize('view', $venta);
 
-        Log::info('Detalles de venta visualizados por ' . auth()->user()->email);
+        Log::info('Detalles de venta visualizados por ' . auth()->user()->correo);
 
         return view('ventas.show', compact('venta'));
     }
@@ -89,9 +88,7 @@ class VentaController extends Controller
      */
     public function cancelar(Venta $venta)
     {
-        if ($venta->usuario_id !== auth()->id()) {
-            abort(403, 'No autorizado');
-        }
+        $this->authorize('cancel', $venta);
 
         if ($venta->estado === 'cancelada') {
             return back()->with('info', 'Esta venta ya está cancelada');
@@ -108,7 +105,7 @@ class VentaController extends Controller
 
             DB::commit();
 
-            Log::info('Venta cancelada: Usuario=' . auth()->user()->email . ', Venta ID=' . $venta->id);
+            Log::info('Venta cancelada: Usuario=' . auth()->user()->correo . ', Venta ID=' . $venta->id);
 
             return redirect()->route('ventas.index')->with('success', 'Venta cancelada correctamente');
 

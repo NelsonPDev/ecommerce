@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Categoria extends Model
 {
@@ -16,10 +16,10 @@ class Categoria extends Model
     ];
 
     /**
-     * Relación: Una categoría tiene muchos productos
+     * Relación: Una categoría pertenece a muchos productos (muchos a muchos)
      */
-    public function productos(): HasMany
+    public function productos(): BelongsToMany
     {
-        return $this->hasMany(Producto::class);
+        return $this->belongsToMany(Producto::class, 'categoria_producto');
     }
 }

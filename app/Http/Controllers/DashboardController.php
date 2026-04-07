@@ -14,11 +14,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        switch ($user->role) {
+        switch ($user->rol) {
+            case 'administrador':
+                return view('dashboards.administrador');
             case 'gerente':
                 return view('dashboards.gerente');
-            case 'empleado':
-                return view('dashboards.empleado');
             case 'cliente':
             default:
                 return view('dashboards.cliente');

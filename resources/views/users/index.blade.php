@@ -7,7 +7,7 @@
             <div class="p-6 text-gray-900">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold">Gestión de Usuarios</h2>
-                    <a href="{{ route('users.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <a href="{{ route('usuarios.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                         Crear Nuevo Usuario
                     </a>
                 </div>
@@ -18,37 +18,39 @@
                     </div>
                 @endif
 
-                @if(count($users) > 0)
+                @if(count($usuarios) > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full border-collapse border border-gray-300">
                             <thead class="bg-gray-100">
                                 <tr>
                                     <th class="border border-gray-300 p-3 text-left">ID</th>
                                     <th class="border border-gray-300 p-3 text-left">Nombre</th>
-                                    <th class="border border-gray-300 p-3 text-left">Email</th>
+                                    <th class="border border-gray-300 p-3 text-left">Apellidos</th>
+                                    <th class="border border-gray-300 p-3 text-left">Correo</th>
                                     <th class="border border-gray-300 p-3 text-left">Rol</th>
                                     <th class="border border-gray-300 p-3 text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($users as $user)
+                                @foreach($usuarios as $usuario)
                                     <tr class="hover:bg-gray-50">
-                                        <td class="border border-gray-300 p-3">{{ $user->id }}</td>
-                                        <td class="border border-gray-300 p-3">{{ $user->name }}</td>
-                                        <td class="border border-gray-300 p-3">{{ $user->email }}</td>
+                                        <td class="border border-gray-300 p-3">{{ $usuario->id }}</td>
+                                        <td class="border border-gray-300 p-3">{{ $usuario->nombre }}</td>
+                                        <td class="border border-gray-300 p-3">{{ $usuario->apellidos }}</td>
+                                        <td class="border border-gray-300 p-3">{{ $usuario->correo }}</td>
                                         <td class="border border-gray-300 p-3">
                                             <span class="px-3 py-1 rounded text-white text-sm font-bold
-                                                @if($user->role == 'gerente') bg-red-600
-                                                @elseif($user->role == 'empleado') bg-orange-600
+                                                @if($usuario->rol == 'administrador') bg-red-600
+                                                @elseif($usuario->rol == 'gerente') bg-orange-600
                                                 @else bg-green-600
                                                 @endif">
-                                                {{ ucfirst($user->role) }}
+                                                {{ ucfirst($usuario->rol) }}
                                             </span>
                                         </td>
                                         <td class="border border-gray-300 p-3 text-center">
-                                            <a href="{{ route('users.show', $user->id) }}" class="text-blue-600 hover:underline mr-3">Ver</a>
-                                            <a href="{{ route('users.edit', $user->id) }}" class="text-yellow-600 hover:underline mr-3">Editar</a>
-                                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                                            <a href="{{ route('usuarios.show', $usuario->id) }}" class="text-blue-600 hover:underline mr-3">Ver</a>
+                                            <a href="{{ route('usuarios.edit', $usuario->id) }}" class="text-yellow-600 hover:underline mr-3">Editar</a>
+                                            <form action="{{ route('usuarios.destroy', $usuario->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
