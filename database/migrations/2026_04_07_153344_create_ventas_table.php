@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
-            $table->foreignId('vendedor_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('cliente_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('producto_id')->constrained('productos')->cascadeOnDelete();
+            $table->foreignId('vendedor_id')->constrained('usuarios')->cascadeOnDelete();
+            $table->foreignId('cliente_id')->constrained('usuarios')->cascadeOnDelete();
             $table->date('fecha');
+            $table->unsignedInteger('cantidad')->default(1);
             $table->decimal('total', 10, 2);
             $table->timestamps();
         });

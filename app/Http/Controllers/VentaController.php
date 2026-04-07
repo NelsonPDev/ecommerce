@@ -2,54 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Venta;
-use App\Models\Producto;
 use App\Http\Requests\StoreVentaRequest;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\UpdateVentaRequest;
+use App\Models\Producto;
+use App\Models\Venta;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class VentaController extends Controller
 {
-    /**
-     * Mostrar historial de ventas del usuario autenticado
-     */
     public function index()
     {
-        $ventas = auth()->user()->ventasComoCliente()->with(['producto', 'vendedor'])->paginate(10);
+        $this->authorize('viewAny', Venta::class);
+
+        $ventas = auth()->user()->esCliente()
+            ? Venta::with(['producto', 'cliente', 'vendedor'])->where('cliente_id', auth()->id())->latest()->paginate(10)
+            : Venta::with(['producto', 'cliente', 'vendedor'])->latest()->paginate(10);
+
         return view('ventas.index', compact('ventas'));
     }
 
-    /**
-     * Procesar compra de producto (solo cliente)
-     */
-    public function comprar(StoreVentaRequest $request)
+    public function create()
     {
         $this->authorize('create', Venta::class);
 
-        $producto = Producto::findOrFail($request->producto_id);
-        $cantidad = $request->cantidad ?? 1; // Default to 1 if not provided
+        $productos = Producto::with('usuario')->where('existencia', '>', 0)->latest()->get();
 
-        // Validar existencia
+        return view('ventas.create', compact('productos'));
+    }
+
+    public function store(StoreVentaRequest $request)
+    {
+        $this->authorize('create', Venta::class);
+
+        $producto = Producto::with('usuario')->findOrFail($request->validated('producto_id'));
+        $cantidad = (int) $request->validated('cantidad');
+
         if ($producto->existencia < $cantidad) {
-            return back()->with('error', 'Existencia insuficiente para este producto');
+            return back()->withErrors([
+                'cantidad' => 'No hay existencia suficiente para completar la compra.',
+            ])->withInput();
         }
 
-        DB::beginTransaction();
+        $total = $producto->precio * $cantidad;
 
         try {
-            // Descontar existencia
-            $producto->decrement('existencia', 1);
+            DB::beginTransaction();
 
-            // Crear venta
             $venta = Venta::create([
                 'producto_id' => $producto->id,
                 'vendedor_id' => $producto->usuario_id,
                 'cliente_id' => auth()->id(),
-                'fecha' => now()->toDateString(),
+                'fecha' => $request->validated('fecha') ?? now()->toDateString(),
+                'cantidad' => $cantidad,
                 'total' => $total,
             ]);
 
-            // Descontar existencia
             $producto->decrement('existencia', $cantidad);
 
             DB::commit();
@@ -62,59 +70,62 @@ class VentaController extends Controller
                 'total' => $total,
             ]);
 
-            return redirect()->route('ventas.index')->with('success', 'Compra realizada exitosamente');
-
-        } catch (\Exception $e) {
+            return redirect()->route('ventas.show', $venta)->with('success', 'Venta registrada correctamente.');
+        } catch (\Throwable $exception) {
             DB::rollBack();
-            Log::error('Error en compra: ' . $e->getMessage());
 
-            return back()->with('error', 'Error al procesar la compra');
+            Log::channel('ventas')->error('Error al crear venta', [
+                'mensaje' => $exception->getMessage(),
+            ]);
+
+            return back()->with('error', 'Ocurrio un error al procesar la venta.');
         }
     }
 
-    /**
-     * Ver detalles de una venta
-     */
     public function show(Venta $venta)
     {
         $this->authorize('view', $venta);
 
-        Log::info('Detalles de venta visualizados por ' . auth()->user()->correo);
+        $venta->load(['producto', 'cliente', 'vendedor']);
 
         return view('ventas.show', compact('venta'));
     }
 
-    /**
-     * Cancelar venta (solo el usuario propietario)
-     */
-    public function cancelar(Venta $venta)
+    public function edit(Venta $venta)
     {
-        $this->authorize('cancel', $venta);
+        $this->authorize('update', $venta);
 
-        if ($venta->estado === 'cancelada') {
-            return back()->with('info', 'Esta venta ya está cancelada');
-        }
+        $venta->load(['producto', 'cliente', 'vendedor']);
 
-        DB::beginTransaction();
+        return view('ventas.edit', compact('venta'));
+    }
+
+    public function update(UpdateVentaRequest $request, Venta $venta)
+    {
+        $this->authorize('update', $venta);
+
+        $venta->update($request->validated());
+
+        return redirect()->route('ventas.show', $venta)->with('success', 'Venta actualizada correctamente.');
+    }
+
+    public function destroy(Venta $venta)
+    {
+        $this->authorize('delete', $venta);
 
         try {
-            // Devolver stock
-            $venta->producto->increment('stock', $venta->cantidad);
+            DB::beginTransaction();
 
-            // Actualizar estado
-            $venta->update(['estado' => 'cancelada']);
+            $venta->producto->increment('existencia', $venta->cantidad);
+            $venta->delete();
 
             DB::commit();
 
-            Log::info('Venta cancelada: Usuario=' . auth()->user()->correo . ', Venta ID=' . $venta->id);
-
-            return redirect()->route('ventas.index')->with('success', 'Venta cancelada correctamente');
-
-        } catch (\Exception $e) {
+            return redirect()->route('ventas.index')->with('success', 'Venta eliminada correctamente.');
+        } catch (\Throwable $exception) {
             DB::rollBack();
-            Log::error('Error al cancelar venta: ' . $e->getMessage());
 
-            return back()->with('error', 'Error al cancelar la venta');
+            return back()->with('error', 'No fue posible eliminar la venta.');
         }
     }
 }

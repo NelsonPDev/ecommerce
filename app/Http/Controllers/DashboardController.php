@@ -2,28 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Categoria;
+use App\Models\Producto;
+use App\Models\Usuario;
+use App\Models\Venta;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
-    /**
-     * Mostrar dashboard según el rol del usuario
-     */
     public function index()
     {
-        $user = Auth::user();
-        
-        switch ($user->rol) {
-            case 'administrador':
-                return view('dashboards.administrador');
-            case 'gerente':
-                \Illuminate\Support\Facades\Log::info('Redirigiendo a dashboard gerente');
-                return view('dashboards.gerente');
-            case 'cliente':
-            default:
-                \Illuminate\Support\Facades\Log::info('Redirigiendo a dashboard cliente');
-                return view('dashboards.cliente');
-        }
+        return view('dashboard', [
+            'esAdministrador' => Gate::allows('es-administrador'),
+            'esGerente' => Gate::allows('es-gerente'),
+            'esCliente' => Gate::allows('es-cliente'),
+            'totalUsuarios' => Usuario::count(),
+            'totalProductos' => Producto::count(),
+            'totalCategorias' => Categoria::count(),
+            'totalVentas' => Venta::count(),
+        ]);
     }
 }

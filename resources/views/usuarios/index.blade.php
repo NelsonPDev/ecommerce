@@ -1,0 +1,43 @@
+@extends('layouts.app')
+
+@section('content')
+    <div class="flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold">Usuarios</h1>
+            <p class="mt-2 text-sm text-slate-500">Administradores pueden gestionar a todos; gerentes solo pueden editar clientes.</p>
+        </div>
+        @can('create', App\Models\Usuario::class)
+            <a href="{{ route('usuarios.create') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Nuevo usuario</a>
+        @endcan
+    </div>
+
+    <div class="mt-8 overflow-hidden rounded-2xl bg-white shadow-sm">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Nombre</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Correo</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Rol</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                @foreach ($usuarios as $usuario)
+                    <tr>
+                        <td class="px-4 py-4">{{ $usuario->nombre }} {{ $usuario->apellidos }}</td>
+                        <td class="px-4 py-4">{{ $usuario->correo }}</td>
+                        <td class="px-4 py-4">{{ $usuario->rol }}</td>
+                        <td class="px-4 py-4">
+                            <div class="flex flex-wrap gap-3 text-sm font-semibold">
+                                <a href="{{ route('usuarios.show', $usuario) }}" class="text-cyan-700">Ver</a>
+                                @can('update', $usuario)
+                                    <a href="{{ route('usuarios.edit', $usuario) }}" class="text-amber-600">Editar</a>
+                                @endcan
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@endsection

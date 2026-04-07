@@ -1,0 +1,53 @@
+@extends('layouts.app')
+
+@section('content')
+    <section class="rounded-3xl bg-white p-8 shadow-sm">
+        <h1 class="text-3xl font-bold">Editar usuario</h1>
+        <form method="POST" action="{{ route('usuarios.update', $usuario) }}" class="mt-8 grid gap-5 md:grid-cols-2">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Nombre</label>
+                <input name="nombre" type="text" value="{{ old('nombre', $usuario->nombre) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Apellidos</label>
+                <input name="apellidos" type="text" value="{{ old('apellidos', $usuario->apellidos) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+            </div>
+            <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold">Correo</label>
+                <input name="correo" type="email" value="{{ old('correo', $usuario->correo) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Nueva clave</label>
+                <input name="clave" type="password" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Confirmar nueva clave</label>
+                <input name="clave_confirmation" type="password" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+            <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold">Rol</label>
+                <select name="rol" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="administrador" @selected(old('rol', $usuario->rol) === 'administrador')>Administrador</option>
+                    <option value="gerente" @selected(old('rol', $usuario->rol) === 'gerente')>Gerente</option>
+                    <option value="cliente" @selected(old('rol', $usuario->rol) === 'cliente')>Cliente</option>
+                </select>
+            </div>
+            <div class="md:col-span-2 flex flex-wrap gap-3">
+                <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Actualizar</button>
+                <a href="{{ route('usuarios.index') }}" class="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700">Cancelar</a>
+            </div>
+        </form>
+
+        @can('delete', $usuario)
+            <form method="POST" action="{{ route('usuarios.destroy', $usuario) }}" class="mt-4">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white" onclick="return confirm('Deseas eliminar este usuario?')">
+                    Eliminar usuario
+                </button>
+            </form>
+        @endcan
+    </section>
+@endsection

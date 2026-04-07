@@ -2,14 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductoRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return $this->user()->can('update', $this->route('producto'));
@@ -18,8 +14,8 @@ class UpdateProductoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
+            'nombre' => 'required|string|min:3|max:255',
+            'descripcion' => 'required|string|min:5|max:2000',
             'precio' => 'required|numeric|min:0',
             'existencia' => 'required|integer|min:0',
             'categorias' => 'required|array|min:1',

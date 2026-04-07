@@ -15,11 +15,13 @@ class Venta extends Model
         'vendedor_id',
         'cliente_id',
         'fecha',
+        'cantidad',
         'total',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
+        'cantidad' => 'integer',
         'fecha' => 'date',
     ];
 

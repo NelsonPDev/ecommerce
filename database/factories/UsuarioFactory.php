@@ -11,10 +11,9 @@ use Illuminate\Support\Facades\Hash;
  */
 class UsuarioFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
+
+    protected static int $sequence = 0;
 
     /**
      * Define the model's default state.
@@ -26,8 +25,26 @@ class UsuarioFactory extends Factory
         $nombres = ['Juan', 'Mario', 'Maria', 'Pedro'];
         $apellidos = ['Lopez', 'Sanchez', 'Hernandez', 'Martinez'];
 
-        $nombre = $this->faker->randomElement($nombres);
-        $apellido = $this->faker->randomElement($apellidos);
+        $combinaciones = [];
+
+        foreach ($nombres as $nombreBase) {
+            foreach ($apellidos as $apellidoBase) {
+                $correo = strtolower(substr($nombreBase, 0, 1) . $apellidoBase) . '@tuxtla.tecnm.mx';
+
+                if (in_array($correo, [
+                    'jlopez@tuxtla.tecnm.mx',
+                    'mmartinez@tuxtla.tecnm.mx',
+                    'psanchez@tuxtla.tecnm.mx',
+                ], true)) {
+                    continue;
+                }
+
+                $combinaciones[] = [$nombreBase, $apellidoBase];
+            }
+        }
+
+        [$nombre, $apellido] = $combinaciones[self::$sequence % count($combinaciones)];
+        self::$sequence++;
 
         return [
             'nombre' => $nombre,

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasMany as EloquentHasMany;
 
 class Producto extends Model
 {
@@ -46,5 +47,10 @@ class Producto extends Model
     public function ventas(): HasMany
     {
         return $this->hasMany(Venta::class);
+    }
+
+    public function categoriaProductos(): EloquentHasMany
+    {
+        return $this->hasMany(CategoriaProducto::class);
     }
 }

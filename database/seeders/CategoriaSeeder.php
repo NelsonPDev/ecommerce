@@ -10,11 +10,11 @@ class CategoriaSeeder extends Seeder
     public function run(): void
     {
         $categorias = [
-            ['nombre' => 'Electrónica', 'descripcion' => 'Productos electrónicos y gadgets'],
-            ['nombre' => 'Ropa', 'descripcion' => 'Ropa y accesorios'],
-            ['nombre' => 'Hogar', 'descripcion' => 'Artículos para el hogar'],
-            ['nombre' => 'Deportes', 'descripcion' => 'Equipos y accesorios deportivos'],
-            ['nombre' => 'Libros', 'descripcion' => 'Libros y material educativo'],
+            ['nombre' => 'Electronica', 'descripcion' => 'Productos electronicos y gadgets.'],
+            ['nombre' => 'Ropa', 'descripcion' => 'Ropa y accesorios para uso diario.'],
+            ['nombre' => 'Hogar', 'descripcion' => 'Articulos utiles para el hogar.'],
+            ['nombre' => 'Deportes', 'descripcion' => 'Equipos y accesorios deportivos.'],
+            ['nombre' => 'Libros', 'descripcion' => 'Libros y material educativo.'],
         ];
 
         foreach ($categorias as $categoria) {

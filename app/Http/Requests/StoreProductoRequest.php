@@ -2,29 +2,21 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
+use App\Models\Producto;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductoRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return $this->user()->can('create', \App\Models\Producto::class);
+        return $this->user()->can('create', Producto::class);
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
+            'nombre' => 'required|string|min:3|max:255',
+            'descripcion' => 'required|string|min:5|max:2000',
             'precio' => 'required|numeric|min:0',
             'existencia' => 'required|integer|min:0',
             'categorias' => 'required|array|min:1',

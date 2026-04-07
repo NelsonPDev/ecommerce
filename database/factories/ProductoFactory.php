@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Categoria;
 use App\Models\Producto;
+use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,19 +11,14 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductoFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'nombre' => $this->faker->word(),
-            'descripcion' => $this->faker->sentence(),
-            'precio' => $this->faker->randomFloat(2, 10, 500),
-            'stock' => $this->faker->numberBetween(0, 100),
-            'categoria_id' => Categoria::factory(),
+            'nombre' => $this->faker->unique()->words(2, true),
+            'descripcion' => $this->faker->sentence(12),
+            'precio' => $this->faker->randomFloat(2, 10, 5000),
+            'existencia' => $this->faker->numberBetween(1, 50),
+            'usuario_id' => Usuario::factory()->gerente(),
         ];
     }
 }

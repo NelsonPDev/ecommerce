@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Venta;
-use App\Models\Usuario;
 use App\Models\Producto;
+use App\Models\Usuario;
+use App\Models\Venta;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -12,24 +12,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class VentaFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $cantidad = $this->faker->numberBetween(1, 10);
-        $precio_unitario = $this->faker->randomFloat(2, 10, 500);
-        $total = $cantidad * $precio_unitario;
+        $producto = Producto::factory()->create();
+        $cantidad = $this->faker->numberBetween(1, 3);
 
         return [
-            'usuario_id' => Usuario::factory()->cliente(),
-            'producto_id' => Producto::factory(),
+            'producto_id' => $producto->id,
+            'vendedor_id' => $producto->usuario_id,
+            'cliente_id' => Usuario::factory()->cliente(),
+            'fecha' => $this->faker->date(),
             'cantidad' => $cantidad,
-            'precio_unitario' => $precio_unitario,
-            'total' => $total,
-            'estado' => $this->faker->randomElement(['pendiente', 'completada', 'cancelada']),
+            'total' => $producto->precio * $cantidad,
         ];
     }
 }

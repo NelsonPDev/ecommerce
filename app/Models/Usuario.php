@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -88,6 +89,21 @@ class Usuario extends Authenticatable
     }
 
     /**
+     * Relacion intermedia para obtener categorias a traves de productos.
+     */
+    public function categoriaProductos(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            CategoriaProducto::class,
+            Producto::class,
+            'usuario_id',
+            'producto_id',
+            'id',
+            'id'
+        );
+    }
+
+    /**
      * Relación: Un usuario tiene muchas ventas como cliente
      */
     public function ventasComoCliente(): HasMany
@@ -106,9 +122,30 @@ class Usuario extends Authenticatable
     /**
      * Relación hasManyThrough: Usuario -> Productos -> Categorías
      */
-    public function categorias()
+    public function categorias(): Builder
     {
-        return $this->hasManyThrough(Categoria::class, Producto::class, 'usuario_id', 'id', 'id', 'categoria_id')
-                    ->distinct();
+        return Categoria::query()
+            ->whereIn('categorias.id', $this->categoriaProductos()->select('categoria_id'))
+            ->distinct();
+    }
+
+    public function hasRole(string $rol): bool
+    {
+        return $this->rol === $rol;
+    }
+
+    public function esAdministrador(): bool
+    {
+        return $this->hasRole('administrador');
+    }
+
+    public function esGerente(): bool
+    {
+        return $this->hasRole('gerente');
+    }
+
+    public function esCliente(): bool
+    {
+        return $this->hasRole('cliente');
     }
 }

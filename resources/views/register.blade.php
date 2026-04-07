@@ -1,174 +1,51 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrarse - TechStore</title>
-    @vite('resources/css/app.css')
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .register-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 500px;
-        }
-        .register-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .register-header h1 {
-            color: #667eea;
-            margin: 0;
-            font-size: 28px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-            box-sizing: border-box;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
-        }
-        .form-group.error input {
-            border-color: #e74c3c;
-        }
-        .error-message {
-            color: #e74c3c;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        .btn-register {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        .register-footer {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .register-footer a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .register-footer a:hover {
-            text-decoration: underline;
-        }
-        .alert {
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-    </style>
+    <title>Registro</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <div class="register-container">
-        <div class="register-header">
-            <h1>📝 Crear cuenta</h1>
-            <p style="color: #999; margin: 5px 0 0 0;">Regístrate para comprar en TechStore</p>
-        </div>
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $error)
-                    <p style="margin: 0;">{{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('register.post') }}">
-            @csrf
-
-            <div class="form-group">
-                <label for="name">Nombre</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus>
-                @error('name')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
+<body class="min-h-screen bg-amber-50 text-slate-900">
+    <div class="mx-auto flex min-h-screen max-w-5xl items-center justify-center px-4 py-10">
+        <div class="w-full rounded-3xl border border-amber-200 bg-white p-8 shadow-xl sm:p-12">
+            <div class="mb-8 max-w-2xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.25em] text-amber-600">Nuevo cliente</p>
+                <h1 class="mt-3 text-3xl font-bold">Crea tu cuenta para comprar productos.</h1>
+                <p class="mt-2 text-sm text-slate-500">El registro publico crea usuarios con rol cliente; administradores y gerentes se gestionan desde el modulo de usuarios.</p>
             </div>
 
-            <div class="form-group">
-                <label for="apellidos">Apellidos</label>
-                <input type="text" id="apellidos" name="apellidos" value="{{ old('apellidos') }}">
-                @error('apellidos')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
+            @include('partials.flash')
 
-            <div class="form-group">
-                <label for="email">Correo</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required>
-                @error('email')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required>
-                @error('password')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="password_confirmation">Confirmar contraseña</label>
-                <input type="password" id="password_confirmation" name="password_confirmation" required>
-            </div>
-
-            <button type="submit" class="btn-register">Registrarme</button>
-        </form>
-
-        <div class="register-footer">
-            <p>¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión</a></p>
+            <form method="POST" action="{{ route('register.post') }}" class="grid gap-5 md:grid-cols-2">
+                @csrf
+                <div>
+                    <label for="nombre" class="mb-2 block text-sm font-semibold">Nombre</label>
+                    <input id="nombre" name="nombre" type="text" value="{{ old('nombre') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-slate-900 focus:outline-none" required>
+                </div>
+                <div>
+                    <label for="apellidos" class="mb-2 block text-sm font-semibold">Apellidos</label>
+                    <input id="apellidos" name="apellidos" type="text" value="{{ old('apellidos') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-slate-900 focus:outline-none" required>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="correo" class="mb-2 block text-sm font-semibold">Correo</label>
+                    <input id="correo" name="correo" type="email" value="{{ old('correo') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-slate-900 focus:outline-none" required>
+                </div>
+                <div>
+                    <label for="clave" class="mb-2 block text-sm font-semibold">Clave</label>
+                    <input id="clave" name="clave" type="password" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-slate-900 focus:outline-none" required>
+                </div>
+                <div>
+                    <label for="clave_confirmation" class="mb-2 block text-sm font-semibold">Confirmar clave</label>
+                    <input id="clave_confirmation" name="clave_confirmation" type="password" class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-slate-900 focus:outline-none" required>
+                </div>
+                <div class="md:col-span-2 flex items-center justify-between gap-4">
+                    <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-500 hover:text-slate-900">Ya tengo cuenta</a>
+                    <button type="submit" class="rounded-xl px-6 py-3 text-sm font-semibold hover:bg-amber-600" style="background-color: #0f172a; color: #ffffff; border: 1px solid #0f172a;">
+                        Crear cuenta
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </body>
