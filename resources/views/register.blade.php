@@ -12,7 +12,6 @@
             <div class="mb-8 max-w-2xl">
                 <p class="text-sm font-semibold uppercase tracking-[0.25em] text-amber-600">Nuevo cliente</p>
                 <h1 class="mt-3 text-3xl font-bold">Crea tu cuenta para comprar productos.</h1>
-                <p class="mt-2 text-sm text-slate-500">El registro publico crea usuarios con rol cliente; administradores y gerentes se gestionan desde el modulo de usuarios.</p>
             </div>
 
             @include('partials.flash')
