@@ -18,7 +18,7 @@ class UsuarioPolicy
 
     public function create(Usuario $user): bool
     {
-        return $user->esAdministrador() || $user->esGerente();
+        return $user->esAdministrador();
     }
 
     public function update(Usuario $user, Usuario $model): bool

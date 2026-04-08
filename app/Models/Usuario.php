@@ -81,9 +81,10 @@ class Usuario extends Authenticatable
     }
 
     /**
-     * Relacion intermedia para obtener categorias a traves de productos.
+     * Relacion hasManyThrough obligatoria: Usuario -> Productos -> categoria_producto.
+     * Esta relacion intermedia permite obtener las categorias asociadas a los productos del usuario.
      */
-    public function categoriaProductos(): HasManyThrough
+    public function categoriasThroughProductos(): HasManyThrough
     {
         return $this->hasManyThrough(
             CategoriaProducto::class,
@@ -93,6 +94,11 @@ class Usuario extends Authenticatable
             'id',
             'id'
         );
+    }
+
+    public function categoriaProductos(): HasManyThrough
+    {
+        return $this->categoriasThroughProductos();
     }
 
     /**
@@ -117,7 +123,7 @@ class Usuario extends Authenticatable
     public function categorias(): Collection
     {
         return Categoria::query()
-            ->whereIn('categorias.id', $this->categoriaProductos()->select('categoria_id'))
+            ->whereIn('categorias.id', $this->categoriasThroughProductos()->select('categoria_id'))
             ->distinct()
             ->get();
     }
