@@ -8,7 +8,9 @@
         </div>
         @auth
             @can('create', App\Models\Categoria::class)
-                <a href="{{ route('categorias.create') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Nueva categoria</a>
+                <a href="{{ route('categorias.create') }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                    Nueva categoria
+                </a>
             @endcan
         @endauth
     </div>
@@ -23,7 +25,9 @@
                     <a href="{{ route('categorias.show', $categoria) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Ver detalle</a>
                     @auth
                         @can('update', $categoria)
-                            <a href="{{ route('categorias.edit', $categoria) }}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white">Editar</a>
+                            <a href="{{ route('categorias.edit', $categoria) }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
+                                Editar
+                            </a>
                         @endcan
                     @endauth
                 </div>

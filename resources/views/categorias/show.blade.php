@@ -9,7 +9,9 @@
             </div>
             @auth
                 @can('update', $categoria)
-                    <a href="{{ route('categorias.edit', $categoria) }}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white">Editar categoria</a>
+                    <a href="{{ route('categorias.edit', $categoria) }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
+                        Editar categoria
+                    </a>
                 @endcan
             @endauth
         </div>

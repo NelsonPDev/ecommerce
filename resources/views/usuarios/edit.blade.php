@@ -37,19 +37,29 @@
                     <p class="mt-2 text-sm text-slate-500">Como gerente solo puedes editar usuarios con rol cliente.</p>
                 @endif
             </div>
-            <div class="md:col-span-2 flex flex-wrap gap-3">
-                <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Actualizar</button>
+            <div class="md:col-span-2 mt-2 flex flex-wrap items-center gap-3">
+                <button type="submit" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                    Actualizar
+                </button>
                 <a href="{{ route('usuarios.index') }}" class="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700">Cancelar</a>
+                @can('delete', $usuario)
+                    <button
+                        type="submit"
+                        form="delete-user-form"
+                        class="rounded-lg px-5 py-3 text-sm font-semibold text-white"
+                        style="background-color: #dc2626; border: 1px solid #b91c1c;"
+                        onclick="return confirm('Deseas eliminar este usuario?')"
+                    >
+                        Eliminar usuario
+                    </button>
+                @endcan
             </div>
         </form>
 
         @can('delete', $usuario)
-            <form method="POST" action="{{ route('usuarios.destroy', $usuario) }}" class="mt-4">
+            <form id="delete-user-form" method="POST" action="{{ route('usuarios.destroy', $usuario) }}" class="hidden">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white" onclick="return confirm('Deseas eliminar este usuario?')">
-                    Eliminar usuario
-                </button>
             </form>
         @endcan
     </section>

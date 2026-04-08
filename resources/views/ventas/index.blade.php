@@ -7,7 +7,9 @@
             <p class="mt-2 text-sm text-slate-500">Cada venta muestra producto, cliente, vendedor, cantidad, fecha y total.</p>
         </div>
         @if (auth()->user()->esCliente())
-            <a href="{{ route('carrito.index') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Ver carrito</a>
+            <a href="{{ route('carrito.index') }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                Ver carrito
+            </a>
         @endif
     </div>
 

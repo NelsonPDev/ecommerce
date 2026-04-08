@@ -28,7 +28,9 @@
             <a href="{{ route('productos.index') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Volver</a>
             @auth
                 @can('update', $producto)
-                    <a href="{{ route('productos.edit', $producto) }}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white">Editar producto</a>
+                    <a href="{{ route('productos.edit', $producto) }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
+                        Editar producto
+                    </a>
                 @endcan
                 @if (auth()->user()->esCliente())
                     <form method="POST" action="{{ route('carrito.add') }}" class="flex flex-wrap items-center gap-3">

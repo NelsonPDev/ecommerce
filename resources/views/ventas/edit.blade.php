@@ -52,19 +52,23 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
-            <div class="md:col-span-2 flex flex-wrap gap-3">
-                <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Actualizar</button>
+            <div class="md:col-span-2 mt-2 flex flex-wrap items-center gap-3">
+                <button type="submit" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                    Actualizar
+                </button>
                 <a href="{{ route('ventas.show', $venta) }}" class="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700">Cancelar</a>
+                @can('delete', $venta)
+                    <button type="submit" form="delete-sale-form" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #dc2626; border: 1px solid #b91c1c;" onclick="return confirm('Deseas eliminar esta venta?')">
+                        Eliminar venta
+                    </button>
+                @endcan
             </div>
         </form>
 
         @can('delete', $venta)
-            <form method="POST" action="{{ route('ventas.destroy', $venta) }}" class="mt-4">
+            <form id="delete-sale-form" method="POST" action="{{ route('ventas.destroy', $venta) }}" class="hidden">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white" onclick="return confirm('Deseas eliminar esta venta?')">
-                    Eliminar venta
-                </button>
             </form>
         @endcan
     </section>

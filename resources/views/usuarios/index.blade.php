@@ -4,10 +4,11 @@
     <div class="flex items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold">Usuarios</h1>
-            <p class="mt-2 text-sm text-slate-500">Administradores pueden gestionar a todos; gerentes solo pueden editar clientes.</p>
         </div>
         @can('create', App\Models\Usuario::class)
-            <a href="{{ route('usuarios.create') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Nuevo usuario</a>
+            <a href="{{ route('usuarios.create') }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                Nuevo usuario
+            </a>
         @endcan
     </div>
 

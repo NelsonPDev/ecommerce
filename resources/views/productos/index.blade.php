@@ -4,11 +4,12 @@
     <div class="flex items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold">Catalogo de productos</h1>
-            <p class="mt-2 text-sm text-slate-500">Cada producto muestra a su vendedor y sus categorias asociadas.</p>
         </div>
         @auth
             @can('create', App\Models\Producto::class)
-                <a href="{{ route('productos.create') }}" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Nuevo producto</a>
+                <a href="{{ route('productos.create') }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                    Nuevo producto
+                </a>
             @endcan
         @endauth
     </div>
@@ -36,7 +37,9 @@
                     <a href="{{ route('productos.show', $producto) }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Ver detalle</a>
                     @auth
                         @can('update', $producto)
-                            <a href="{{ route('productos.edit', $producto) }}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white">Editar</a>
+                            <a href="{{ route('productos.edit', $producto) }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
+                                Editar
+                            </a>
                         @endcan
                         @if (auth()->user()->esCliente())
                             <form method="POST" action="{{ route('carrito.add') }}" class="flex items-center gap-2">

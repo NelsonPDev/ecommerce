@@ -36,16 +36,26 @@
                     @endforeach
                 </div>
             </div>
-            <div class="flex flex-wrap gap-3">
-                <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white">Actualizar</button>
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <button type="submit" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
+                    Actualizar
+                </button>
                 <a href="{{ route('productos.index') }}" class="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700">Cancelar</a>
+                <button
+                    type="submit"
+                    form="delete-product-form"
+                    class="rounded-lg px-5 py-3 text-sm font-semibold text-white"
+                    style="background-color: #dc2626; border: 1px solid #b91c1c;"
+                    onclick="return confirm('Deseas eliminar este producto?')"
+                >
+                    Eliminar producto
+                </button>
             </div>
         </form>
 
-        <form method="POST" action="{{ route('productos.destroy', $producto) }}" class="mt-4">
+        <form id="delete-product-form" method="POST" action="{{ route('productos.destroy', $producto) }}" class="hidden">
             @csrf
             @method('DELETE')
-            <button type="submit" class="rounded-lg bg-red-600 px-5 py-3 text-sm font-semibold text-white" onclick="return confirm('Deseas eliminar este producto?')">Eliminar producto</button>
         </form>
     </section>
 @endsection

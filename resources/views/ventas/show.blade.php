@@ -33,7 +33,9 @@
         <div class="mt-8 flex flex-wrap gap-3">
             <a href="{{ route('ventas.index') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Volver</a>
             @can('update', $venta)
-                <a href="{{ route('ventas.edit', $venta) }}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white">Editar venta</a>
+                <a href="{{ route('ventas.edit', $venta) }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
+                    Editar venta
+                </a>
             @endcan
         </div>
     </section>
