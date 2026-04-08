@@ -25,7 +25,15 @@ class UsuarioController extends Controller
     {
         $this->authorize('create', Usuario::class);
 
-        return view('usuarios.create');
+        $rolesDisponibles = auth()->user()->esGerente()
+            ? ['cliente' => 'Cliente']
+            : [
+                'administrador' => 'Administrador',
+                'gerente' => 'Gerente',
+                'cliente' => 'Cliente',
+            ];
+
+        return view('usuarios.create', compact('rolesDisponibles'));
     }
 
     public function store(StoreUsuarioRequest $request)

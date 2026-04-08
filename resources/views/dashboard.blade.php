@@ -1,24 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-    @if ($esAdministrador)
+    @if ($esAdministrador || $esGerente)
         <section class="rounded-3xl bg-white p-8 shadow-sm">
-            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-700">Administrador</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-700">{{ $esAdministrador ? 'Administrador' : 'Gerente' }}</p>
             <h1 class="mt-3 text-3xl font-bold text-slate-900">Bienvenido, {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</h1>
         </section>
 
         <section class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <article class="rounded-2xl bg-slate-900 p-6 text-white">
-                <p class="text-sm text-slate-300">Ventas totales</p>
-                <p class="mt-2 text-3xl font-bold">{{ $totalVentas }}</p>
+            <article class="rounded-2xl bg-white p-6 shadow-sm">
+                <p class="text-sm text-slate-500">{{ $esAdministrador ? 'Usuarios' : 'Clientes' }}</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">{{ $esAdministrador ? $totalUsuarios : $totalClientes }}</p>
             </article>
             <article class="rounded-2xl bg-white p-6 shadow-sm">
                 <p class="text-sm text-slate-500">Ingresos últimos 7 días</p>
                 <p class="mt-2 text-3xl font-bold text-slate-900">${{ number_format($totalIngresosSemana, 2) }}</p>
             </article>
             <article class="rounded-2xl bg-white p-6 shadow-sm">
-                <p class="text-sm text-slate-500">Unidades vendidas</p>
-                <p class="mt-2 text-3xl font-bold text-slate-900">{{ $totalUnidadesSemana }}</p>
+                <p class="text-sm text-slate-500">Ventas totales</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">{{ $totalVentas }}</p>
             </article>
             <article class="rounded-2xl bg-white p-6 shadow-sm">
                 <p class="text-sm text-slate-500">Productos registrados</p>
@@ -72,22 +72,6 @@
                     @endforelse
                 </div>
             </article>
-        </section>
-    @elseif ($esGerente)
-        <section class="rounded-3xl bg-white p-8 shadow-sm">
-            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-700">{{ auth()->user()->rol }}</p>
-            <h1 class="mt-3 text-3xl font-bold text-slate-900">Bienvenido, {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</h1>
-
-            <div class="mt-8 grid gap-5 md:grid-cols-2">
-                <div class="rounded-2xl bg-slate-900 p-6 text-white">
-                    <p class="text-sm text-slate-300">Clientes</p>
-                    <p class="mt-2 text-3xl font-bold">{{ $totalClientes }}</p>
-                </div>
-                <div class="rounded-2xl bg-white p-6 shadow-sm">
-                    <p class="text-sm text-slate-500">Productos</p>
-                    <p class="mt-2 text-3xl font-bold text-slate-900">{{ $totalProductos }}</p>
-                </div>
-            </div>
         </section>
     @elseif ($esCliente)
         <section class="rounded-3xl bg-white p-8 shadow-sm">

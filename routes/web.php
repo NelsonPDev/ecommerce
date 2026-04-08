@@ -16,9 +16,9 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
-Route::get('/productos/{producto}', [ProductoController::class, 'show'])->name('productos.show');
+Route::get('/productos/{producto}', [ProductoController::class, 'show'])->whereNumber('producto')->name('productos.show');
 Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
-Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->name('categorias.show');
+Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->whereNumber('categoria')->name('categorias.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

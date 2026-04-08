@@ -18,7 +18,7 @@ class UsuarioPolicy
 
     public function create(Usuario $user): bool
     {
-        return $user->esAdministrador();
+        return $user->esAdministrador() || $user->esGerente();
     }
 
     public function update(Usuario $user, Usuario $model): bool
@@ -36,6 +36,10 @@ class UsuarioPolicy
 
     public function delete(Usuario $user, Usuario $model): bool
     {
-        return $user->esAdministrador() && $user->id !== $model->id;
+        if ($user->esAdministrador()) {
+            return $user->id !== $model->id;
+        }
+
+        return false;
     }
 }

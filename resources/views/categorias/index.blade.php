@@ -4,7 +4,6 @@
     <div class="flex items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold">Categorias</h1>
-            <p class="mt-2 text-sm text-slate-500">Relacion muchos a muchos entre productos y categorias.</p>
         </div>
         @auth
             @can('create', App\Models\Categoria::class)

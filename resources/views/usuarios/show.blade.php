@@ -14,10 +14,15 @@
             </div>
         </dl>
 
-        @can('update', $usuario)
-            <a href="{{ route('usuarios.edit', $usuario) }}" class="mt-6 inline-block rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
-                Editar usuario
+        <div class="mt-6 flex flex-wrap gap-3">
+            <a href="{{ route('usuarios.index') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
+                Volver
             </a>
-        @endcan
+            @can('update', $usuario)
+                <a href="{{ route('usuarios.edit', $usuario) }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #f59e0b; border: 1px solid #d97706;">
+                    Editar usuario
+                </a>
+            @endcan
+        </div>
     </section>
 @endsection

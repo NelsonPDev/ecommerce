@@ -14,12 +14,16 @@ class StoreUsuarioRequest extends FormRequest
 
     public function rules(): array
     {
+        $rolesPermitidos = $this->user()->esGerente()
+            ? ['cliente']
+            : ['administrador', 'gerente', 'cliente'];
+
         return [
             'nombre' => 'required|string|min:2|max:255',
             'apellidos' => 'required|string|min:2|max:255',
             'correo' => 'required|email|unique:usuarios,correo',
             'clave' => 'required|string|min:3|confirmed',
-            'rol' => 'required|in:administrador,gerente,cliente',
+            'rol' => ['required', 'in:' . implode(',', $rolesPermitidos)],
         ];
     }
 }
