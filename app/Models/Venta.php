@@ -17,12 +17,17 @@ class Venta extends Model
         'fecha',
         'cantidad',
         'total',
+        'ticket',
+        'estado',
+        'validada_at',
+        'validada_por',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
         'cantidad' => 'integer',
         'fecha' => 'date',
+        'validada_at' => 'datetime',
     ];
 
     /**
@@ -47,5 +52,15 @@ class Venta extends Model
     public function vendedor(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'vendedor_id');
+    }
+
+    public function validador(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'validada_por');
+    }
+
+    public function estaValidada(): bool
+    {
+        return $this->estado === 'validada';
     }
 }

@@ -3,7 +3,9 @@
 @section('content')
     <div class="flex items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold">{{ auth()->user()->esCliente() ? 'Historial de compras' : 'Ventas registradas' }}</h1>
+            <h1 class="text-3xl font-bold">
+                {{ auth()->user()->esAdministrador() || auth()->user()->esGerente() ? 'Ventas registradas' : (auth()->user()->esVendedor() ? 'Mis compras y ventas' : 'Historial de compras') }}
+            </h1>
         </div>
         @if (auth()->user()->esCliente())
             <a href="{{ route('carrito.index') }}" class="rounded-lg px-4 py-2 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
@@ -22,6 +24,7 @@
                     <th class="px-4 py-3 text-left text-sm font-semibold">Cantidad</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Fecha</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Total</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Estado</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Acciones</th>
                 </tr>
             </thead>
@@ -34,11 +37,21 @@
                         <td class="px-4 py-4">{{ $venta->cantidad }}</td>
                         <td class="px-4 py-4">{{ $venta->fecha->format('Y-m-d') }}</td>
                         <td class="px-4 py-4">${{ number_format($venta->total, 2) }}</td>
+                        <td class="px-4 py-4">{{ ucfirst($venta->estado) }}</td>
                         <td class="px-4 py-4">
                             <div class="flex flex-wrap gap-3 text-sm font-semibold">
                                 <a href="{{ route('ventas.show', $venta) }}" class="text-cyan-700">Ver</a>
+                                @can('viewTicket', $venta)
+                                    <a href="{{ route('ventas.ticket', $venta) }}" target="_blank" class="text-slate-700">Ticket</a>
+                                @endcan
                                 @can('update', $venta)
                                     <a href="{{ route('ventas.edit', $venta) }}" class="text-amber-600">Editar</a>
+                                @endcan
+                                @can('validate', $venta)
+                                    <form method="POST" action="{{ route('ventas.validate', $venta) }}">
+                                        @csrf
+                                        <button type="submit" class="text-emerald-700">Validar</button>
+                                    </form>
                                 @endcan
                             </div>
                         </td>

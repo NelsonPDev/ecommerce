@@ -19,17 +19,17 @@ class ProductoPolicy
 
     public function create(Usuario $user): bool
     {
-        return $user->esAdministrador() || $user->esGerente();
+        return $user->puedeGestionarProductos();
     }
 
     public function update(Usuario $user, Producto $producto): bool
     {
-        return $user->esAdministrador() || $user->esGerente();
+        return $user->esAdministrador() || $user->esGerente() || ($user->esVendedor() && $producto->usuario_id === $user->id);
     }
 
     public function delete(Usuario $user, Producto $producto): bool
     {
-        return $user->esAdministrador() || $user->esGerente();
+        return $user->esAdministrador() || $user->esGerente() || ($user->esVendedor() && $producto->usuario_id === $user->id);
     }
 
     public function buy(Usuario $user): bool

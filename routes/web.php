@@ -23,6 +23,9 @@ Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->whe
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('/verificacion-2fa', [LoginController::class, 'showTwoFactorForm'])->name('two-factor.show');
+    Route::post('/verificacion-2fa', [LoginController::class, 'verifyTwoFactorCode'])->name('two-factor.verify');
+    Route::post('/verificacion-2fa/reenviar', [LoginController::class, 'resendTwoFactorCode'])->name('two-factor.resend');
 
     Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
@@ -47,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('categorias', CategoriaController::class)->except(['index', 'show']);
     Route::resource('productos', ProductoController::class)->except(['index', 'show']);
+    Route::get('/ventas/{venta}/ticket', [VentaController::class, 'showTicket'])->name('ventas.ticket');
+    Route::post('/ventas/{venta}/validar', [VentaController::class, 'validateSale'])->name('ventas.validate');
     Route::resource('ventas', VentaController::class);
 });
 

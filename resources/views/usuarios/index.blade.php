@@ -19,6 +19,7 @@
                     <th class="px-4 py-3 text-left text-sm font-semibold">Nombre</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Correo</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Rol</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Vendedor</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold">Acciones</th>
                 </tr>
             </thead>
@@ -28,6 +29,7 @@
                         <td class="px-4 py-4">{{ $usuario->nombre }} {{ $usuario->apellidos }}</td>
                         <td class="px-4 py-4">{{ $usuario->correo }}</td>
                         <td class="px-4 py-4">{{ $usuario->rol }}</td>
+                        <td class="px-4 py-4">{{ $usuario->es_vendedor ? 'Si' : 'No' }}</td>
                         <td class="px-4 py-4">
                             <div class="flex flex-wrap gap-3 text-sm font-semibold">
                                 <a href="{{ route('usuarios.show', $usuario) }}" class="text-cyan-700">Ver</a>

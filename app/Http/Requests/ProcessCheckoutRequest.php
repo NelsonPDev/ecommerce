@@ -19,6 +19,7 @@ class ProcessCheckoutRequest extends FormRequest
             'numero_tarjeta' => 'required|string|min:8|max:19',
             'expiracion' => 'required|string|min:4|max:5',
             'cvv' => 'required|string|min:3|max:4',
+            'ticket' => 'required|image|max:4096',
         ];
     }
 }

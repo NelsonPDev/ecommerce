@@ -2,41 +2,42 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Usuario;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        \App\Models\Usuario::create([
+        Usuario::create([
             'nombre' => 'Juan',
             'apellidos' => 'Lopez',
             'correo' => 'jlopez@tuxtla.tecnm.mx',
-            'clave' => \Illuminate\Support\Facades\Hash::make('123'),
+            'clave' => Hash::make('123'),
             'rol' => 'cliente',
+            'es_vendedor' => false,
         ]);
 
-        \App\Models\Usuario::create([
+        Usuario::create([
             'nombre' => 'Maria',
             'apellidos' => 'Martinez',
             'correo' => 'mmartinez@tuxtla.tecnm.mx',
-            'clave' => \Illuminate\Support\Facades\Hash::make('123'),
+            'clave' => Hash::make('123'),
             'rol' => 'gerente',
+            'es_vendedor' => true,
         ]);
 
-        \App\Models\Usuario::create([
+        Usuario::create([
             'nombre' => 'Pedro',
             'apellidos' => 'Sanchez',
             'correo' => 'psanchez@tuxtla.tecnm.mx',
-            'clave' => \Illuminate\Support\Facades\Hash::make('123'),
+            'clave' => Hash::make('123'),
             'rol' => 'administrador',
+            'es_vendedor' => true,
         ]);
 
-        // Crear más con factory
-        \App\Models\Usuario::factory(5)->create();
+        Usuario::factory(28)->cliente()->vendedor()->create();
+        Usuario::factory(69)->cliente()->create();
     }
 }

@@ -3,7 +3,7 @@
 @section('content')
     <section class="rounded-3xl bg-white p-8 shadow-sm">
         <h1 class="text-3xl font-bold">Registrar venta</h1>
-        <form method="POST" action="{{ route('ventas.store') }}" class="mt-8 grid gap-5">
+        <form method="POST" action="{{ route('ventas.store') }}" enctype="multipart/form-data" class="mt-8 grid gap-5">
             @csrf
             <div>
                 <label class="mb-2 block text-sm font-semibold">Producto</label>
@@ -38,6 +38,11 @@
                     <label class="mb-2 block text-sm font-semibold">Fecha</label>
                     <input name="fecha" type="date" value="{{ old('fecha', now()->toDateString()) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3">
                 </div>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Ticket</label>
+                <input name="ticket" type="file" accept="image/*" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                <p class="mt-2 text-sm text-slate-500">El ticket se almacena en disco privado y solo se sirve por controlador autorizado.</p>
             </div>
             <div class="flex gap-3">
                 <button type="submit" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">

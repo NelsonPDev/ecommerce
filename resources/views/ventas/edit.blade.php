@@ -8,7 +8,7 @@
             Cliente: <strong>{{ $venta->cliente->nombre }} {{ $venta->cliente->apellidos }}</strong>
         </div>
 
-        <form method="POST" action="{{ route('ventas.update', $venta) }}" class="mt-8 grid gap-5 md:grid-cols-2">
+        <form method="POST" action="{{ route('ventas.update', $venta) }}" enctype="multipart/form-data" class="mt-8 grid gap-5 md:grid-cols-2">
             @csrf
             @method('PUT')
             <div>
@@ -22,12 +22,6 @@
                 <label class="mb-2 block text-sm font-semibold">Vendedor</label>
                 <select name="vendedor_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
                     <option value="">Selecciona un vendedor</option>
-                    @php
-                        $vendedores = App\Models\Usuario::where(function ($query) {
-                            $query->where('rol', 'administrador')
-                                  ->orWhere('rol', 'gerente');
-                        })->get();
-                    @endphp
                     @foreach ($vendedores as $vendedor)
                         <option value="{{ $vendedor->id }}" @selected(old('vendedor_id', $venta->vendedor_id) == $vendedor->id)>
                             {{ $vendedor->nombre }} {{ $vendedor->apellidos }}
@@ -51,6 +45,10 @@
                 @error('total')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
+            </div>
+            <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold">Reemplazar ticket</label>
+                <input name="ticket" type="file" accept="image/*" class="w-full rounded-xl border border-slate-300 px-4 py-3">
             </div>
             <div class="md:col-span-2 mt-2 flex flex-wrap items-center gap-3">
                 <button type="submit" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">

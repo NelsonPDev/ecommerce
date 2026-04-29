@@ -3,7 +3,7 @@
 @section('content')
     <section class="rounded-3xl bg-white p-8 shadow-sm">
         <h1 class="text-3xl font-bold">Crear producto</h1>
-        <form method="POST" action="{{ route('productos.store') }}" class="mt-8 grid gap-5">
+        <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data" class="mt-8 grid gap-5">
             @csrf
             <div>
                 <label class="mb-2 block text-sm font-semibold">Nombre</label>
@@ -22,6 +22,21 @@
                     <label class="mb-2 block text-sm font-semibold">Existencia</label>
                     <input name="existencia" type="number" min="0" value="{{ old('existencia') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
                 </div>
+            </div>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Nombre del vendedor</label>
+                    <input name="vendedor_nombre" type="text" value="{{ old('vendedor_nombre', auth()->user()->nombre ?? '') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Apellidos del vendedor</label>
+                    <input name="vendedor_apellidos" type="text" value="{{ old('vendedor_apellidos', auth()->user()->apellidos ?? '') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                </div>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Fotos del producto</label>
+                <input name="fotos[]" type="file" accept="image/*" multiple class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                <p class="mt-2 text-sm text-slate-500">Se almacenan en el disco publico para mostrarlas en el catalogo.</p>
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold">Categorias</label>

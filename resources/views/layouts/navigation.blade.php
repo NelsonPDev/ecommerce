@@ -22,13 +22,17 @@
                     @if (auth()->user()->esAdministrador())
                         <a href="{{ route('usuarios.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Usuarios</a>
                         <a href="{{ route('productos.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Productos</a>
-                        <a href="{{ route('categorias.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Categorías</a>
+                        <a href="{{ route('categorias.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Categorias</a>
                         <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Ventas</a>
                     @elseif (auth()->user()->esGerente())
                         <a href="{{ route('usuarios.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Usuarios</a>
                         <a href="{{ route('productos.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Productos</a>
                         <a href="{{ route('categorias.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Categorias</a>
                         <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Ventas</a>
+                    @elseif (auth()->user()->esVendedor())
+                        <a href="{{ route('productos.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Productos</a>
+                        <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Ventas</a>
+                        <a href="{{ route('carrito.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Carrito</a>
                     @else
                         <a href="{{ route('carrito.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Carrito</a>
                         <a href="{{ route('ventas.index') }}" class="text-sm text-slate-600 hover:text-slate-900">Historial</a>
@@ -41,7 +45,12 @@
             @auth
                 <div class="text-right text-sm">
                     <p class="font-semibold text-slate-900">{{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}</p>
-                    <p class="text-slate-500">{{ auth()->user()->rol }}</p>
+                    <p class="text-slate-500">
+                        {{ auth()->user()->rol }}
+                        @if (auth()->user()->es_vendedor)
+                            / vendedor
+                        @endif
+                    </p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

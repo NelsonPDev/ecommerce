@@ -18,7 +18,8 @@ class ProductoFactory extends Factory
             'descripcion' => $this->faker->sentence(12),
             'precio' => $this->faker->randomFloat(2, 10, 5000),
             'existencia' => $this->faker->numberBetween(1, 50),
-            'usuario_id' => Usuario::factory()->gerente(),
+            'fotos' => [],
+            'usuario_id' => Usuario::factory()->cliente()->vendedor(),
         ];
     }
 }

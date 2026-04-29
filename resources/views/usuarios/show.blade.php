@@ -12,6 +12,10 @@
                 <dt class="text-sm font-semibold text-slate-500">Rol</dt>
                 <dd class="mt-1 text-lg">{{ $usuario->rol }}</dd>
             </div>
+            <div class="rounded-2xl bg-slate-50 p-4">
+                <dt class="text-sm font-semibold text-slate-500">Perfil vendedor</dt>
+                <dd class="mt-1 text-lg">{{ $usuario->es_vendedor ? 'Activo' : 'No asignado' }}</dd>
+            </div>
         </dl>
 
         <div class="mt-6 flex flex-wrap gap-3">

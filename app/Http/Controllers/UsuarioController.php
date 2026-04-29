@@ -46,6 +46,7 @@ class UsuarioController extends Controller
             'correo' => $data['correo'],
             'clave' => Hash::make($data['clave']),
             'rol' => $data['rol'],
+            'es_vendedor' => auth()->user()->esAdministrador() ? (bool) ($data['es_vendedor'] ?? false) : false,
         ]);
 
         Log::info('Usuario creado', [
@@ -87,6 +88,12 @@ class UsuarioController extends Controller
             $data['clave'] = Hash::make($data['clave']);
         } else {
             unset($data['clave']);
+        }
+
+        if (! auth()->user()->esAdministrador()) {
+            unset($data['es_vendedor']);
+        } else {
+            $data['es_vendedor'] = (bool) ($data['es_vendedor'] ?? false);
         }
 
         $usuario->update($data);

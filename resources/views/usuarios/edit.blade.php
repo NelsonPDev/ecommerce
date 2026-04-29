@@ -37,6 +37,14 @@
                     <p class="mt-2 text-sm text-slate-500">Como gerente solo puedes editar usuarios con rol cliente.</p>
                 @endif
             </div>
+            @if (auth()->user()->esAdministrador())
+                <div class="md:col-span-2 rounded-2xl border border-slate-200 p-4">
+                    <label class="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                        <input type="checkbox" name="es_vendedor" value="1" @checked(old('es_vendedor', $usuario->es_vendedor))>
+                        <span>Perfil de vendedor</span>
+                    </label>
+                </div>
+            @endif
             <div class="md:col-span-2 mt-2 flex flex-wrap items-center gap-3">
                 <button type="submit" class="rounded-lg px-5 py-3 text-sm font-semibold text-white" style="background-color: #0f172a; border: 1px solid #0f172a;">
                     Actualizar

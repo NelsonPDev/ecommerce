@@ -6,69 +6,76 @@ use App\Models\Categoria;
 use App\Models\Producto;
 use App\Models\Usuario;
 use App\Models\Venta;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(): View
     {
-        $esCliente = Gate::allows('es-cliente');
-        $esGerente = Gate::allows('es-gerente');
-        $esAdministrador = Gate::allows('es-administrador');
+        $usuario = auth()->user();
+        $esAdministrador = $usuario->esAdministrador();
+        $esGerente = $usuario->esGerente();
+        $esCliente = $usuario->esCliente();
+        $esVendedor = $usuario->esVendedor();
 
-        $hoy = Carbon::today();
-        $inicioPeriodo = $hoy->copy()->subDays(6);
+        $categorias = Categoria::with(['productos.ventas.cliente'])->withCount('productos')->get();
+        $productos = Producto::with(['usuario', 'categorias', 'ventas'])->latest()->paginate(9);
+        $ventasPendientes = Venta::with(['producto', 'cliente', 'vendedor'])
+            ->where('estado', 'pendiente')
+            ->latest()
+            ->take(8)
+            ->get();
 
-        $ventasUltimos7Dias = Venta::query()
-            ->selectRaw('fecha, SUM(total) as ingresos, SUM(cantidad) as unidades')
-            ->whereBetween('fecha', [$inicioPeriodo->toDateString(), $hoy->toDateString()])
-            ->groupBy('fecha')
-            ->orderBy('fecha')
+        $productoMasVendido = Producto::with('ventas')
             ->get()
-            ->keyBy(fn (Venta $venta) => $venta->fecha->format('Y-m-d'));
+            ->map(function (Producto $producto) {
+                $producto->unidades_vendidas = $producto->ventas->sum('cantidad');
 
-        $serieVentas = collect(range(0, 6))->map(function (int $offset) use ($inicioPeriodo, $ventasUltimos7Dias) {
-            $fecha = $inicioPeriodo->copy()->addDays($offset);
-            $venta = $ventasUltimos7Dias->get($fecha->format('Y-m-d'));
+                return $producto;
+            })
+            ->sortByDesc('unidades_vendidas')
+            ->first();
+
+        $compradoresFrecuentesPorCategoria = $categorias->map(function (Categoria $categoria) {
+            $ventas = $categoria->productos->flatMap->ventas;
+
+            $grupoCompradores = $ventas->groupBy('cliente_id')
+                ->sortByDesc(fn ($ventasCliente) => $ventasCliente->count());
+
+            $ventasDelComprador = $grupoCompradores->first();
+            $primerRegistro = $ventasDelComprador?->first();
 
             return [
-                'label' => $fecha->translatedFormat('d M'),
-                'ingresos' => (float) ($venta->ingresos ?? 0),
-                'unidades' => (int) ($venta->unidades ?? 0),
+                'categoria' => $categoria,
+                'comprador' => $primerRegistro?->cliente,
+                'compras' => $ventasDelComprador?->count() ?? 0,
             ];
         });
 
-        $productosMasVendidos = Venta::query()
-            ->join('productos', 'productos.id', '=', 'ventas.producto_id')
-            ->select(
-                'productos.nombre',
-                DB::raw('SUM(ventas.cantidad) as unidades_vendidas'),
-                DB::raw('SUM(ventas.total) as ingresos')
-            )
-            ->groupBy('productos.id', 'productos.nombre')
-            ->orderByDesc('unidades_vendidas')
-            ->limit(5)
-            ->get();
+        $vendedorConMasCategorias = Usuario::where('es_vendedor', true)
+            ->withCount('categoriaProductos')
+            ->orderByDesc('categoria_productos_count')
+            ->first();
 
         return view('dashboard', [
             'esAdministrador' => $esAdministrador,
             'esGerente' => $esGerente,
             'esCliente' => $esCliente,
+            'esVendedor' => $esVendedor,
+            'usuario' => $usuario,
             'totalUsuarios' => Usuario::count(),
-            'totalProductos' => Producto::count(),
+            'totalVendedores' => Usuario::where('es_vendedor', true)->count(),
+            'totalCompradores' => Usuario::where('es_vendedor', false)->count(),
             'totalClientes' => Usuario::where('rol', 'cliente')->count(),
-            'totalCategorias' => Categoria::count(),
-            'totalVentas' => Venta::count(),
-            'serieVentas' => $serieVentas,
-            'maxIngresosVentas' => max((float) $serieVentas->max('ingresos'), 1),
-            'totalIngresosSemana' => (float) $serieVentas->sum('ingresos'),
-            'totalUnidadesSemana' => (int) $serieVentas->sum('unidades'),
-            'productosMasVendidos' => $productosMasVendidos,
-            'productos' => $esCliente
-                ? Producto::with(['usuario', 'categorias'])->latest()->paginate(9)
-                : null,
+            'productosPorCategoria' => $categorias,
+            'productoMasVendido' => $productoMasVendido,
+            'compradoresFrecuentesPorCategoria' => $compradoresFrecuentesPorCategoria,
+            'ventasPendientes' => $ventasPendientes,
+            'productos' => $productos,
+            'misProductos' => $esVendedor ? $usuario->productos()->with('categorias')->latest()->take(6)->get() : collect(),
+            'misCompras' => $usuario->ventasComoCliente()->count(),
+            'misVentas' => $esVendedor ? $usuario->ventasComoVendedor()->count() : 0,
+            'vendedorConMasCategorias' => $vendedorConMasCategorias,
         ]);
     }
 }

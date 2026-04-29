@@ -5,13 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddToCartRequest;
 use App\Http\Requests\ProcessCheckoutRequest;
 use App\Http\Requests\StoreVentaRequest;
+use App\Http\Requests\UpdateCartRequest;
 use App\Http\Requests\UpdateVentaRequest;
+use App\Http\Requests\ValidateVentaRequest;
+use App\Mail\VentaValidadaCompradorMail;
+use App\Mail\VentaValidadaVendedorMail;
 use App\Models\Producto;
 use App\Models\Usuario;
 use App\Models\Venta;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class VentaController extends Controller
@@ -21,9 +28,20 @@ class VentaController extends Controller
         $this->authorize('viewAny', Venta::class);
         $usuario = auth()->user();
 
-        $ventas = $usuario->esCliente()
-            ? Venta::with(['producto', 'cliente', 'vendedor'])->where('cliente_id', $usuario->id)->latest()->paginate(10)
-            : Venta::with(['producto', 'cliente', 'vendedor'])->latest()->paginate(10);
+        $ventas = match (true) {
+            $usuario->esAdministrador(), $usuario->esGerente() => Venta::with(['producto', 'cliente', 'vendedor', 'validador'])->latest()->paginate(10),
+            $usuario->esVendedor() => Venta::with(['producto', 'cliente', 'vendedor', 'validador'])
+                ->where(function ($query) use ($usuario) {
+                    $query->where('cliente_id', $usuario->id)
+                        ->orWhere('vendedor_id', $usuario->id);
+                })
+                ->latest()
+                ->paginate(10),
+            default => Venta::with(['producto', 'cliente', 'vendedor', 'validador'])
+                ->where('cliente_id', $usuario->id)
+                ->latest()
+                ->paginate(10),
+        };
 
         return view('ventas.index', compact('ventas'));
     }
@@ -32,12 +50,10 @@ class VentaController extends Controller
     {
         $this->authorize('create', Venta::class);
 
-        $productos = Producto::with('usuario')->get();
-        $clientes = [];
-
-        if (auth()->user()->esAdministrador()) {
-            $clientes = Usuario::where('rol', 'cliente')->get();
-        }
+        $productos = Producto::with('usuario')->where('existencia', '>', 0)->get();
+        $clientes = auth()->user()->esAdministrador()
+            ? Usuario::where('rol', 'cliente')->orderBy('nombre')->get()
+            : collect();
 
         return view('ventas.create', compact('productos', 'clientes'));
     }
@@ -57,12 +73,15 @@ class VentaController extends Controller
         }
 
         $total = $producto->precio * $cantidad;
-        $clienteId = auth()->user()->esAdministrador()
+        $clienteId = $usuario->esAdministrador()
             ? $request->validated('cliente_id') ?? $usuario->id
             : $usuario->id;
+        $ticketPath = null;
 
         try {
             DB::beginTransaction();
+
+            $ticketPath = $this->storeTicket($request);
 
             $venta = Venta::create([
                 'producto_id' => $producto->id,
@@ -71,6 +90,8 @@ class VentaController extends Controller
                 'fecha' => $request->validated('fecha') ?? now()->toDateString(),
                 'cantidad' => $cantidad,
                 'total' => $total,
+                'ticket' => $ticketPath,
+                'estado' => 'pendiente',
             ]);
 
             $producto->decrement('existencia', $cantidad);
@@ -88,6 +109,10 @@ class VentaController extends Controller
             return redirect()->route('ventas.show', $venta)->with('success', 'Venta registrada correctamente.');
         } catch (\Throwable $exception) {
             DB::rollBack();
+
+            if ($ticketPath) {
+                Storage::disk('private')->delete($ticketPath);
+            }
 
             Log::channel('ventas')->error('Error al crear venta', [
                 'mensaje' => $exception->getMessage(),
@@ -133,7 +158,7 @@ class VentaController extends Controller
         return back()->with('success', 'Producto agregado al carrito.');
     }
 
-    public function updateCart(\App\Http\Requests\UpdateCartRequest $request, Producto $producto): RedirectResponse
+    public function updateCart(UpdateCartRequest $request, Producto $producto): RedirectResponse
     {
         $this->authorize('buy', Producto::class);
 
@@ -190,6 +215,8 @@ class VentaController extends Controller
             return redirect()->route('productos.index')->with('error', 'Tu carrito esta vacio.');
         }
 
+        $ticketsGuardados = [];
+
         try {
             DB::beginTransaction();
 
@@ -202,6 +229,9 @@ class VentaController extends Controller
                     return redirect()->route('carrito.index')->with('error', 'Uno de los productos ya no tiene suficiente existencia.');
                 }
 
+                $ticketPath = $this->storeTicket($request);
+                $ticketsGuardados[] = $ticketPath;
+
                 $venta = Venta::create([
                     'producto_id' => $producto->id,
                     'vendedor_id' => $producto->usuario_id,
@@ -209,6 +239,8 @@ class VentaController extends Controller
                     'fecha' => now()->toDateString(),
                     'cantidad' => $item['cantidad'],
                     'total' => $item['subtotal'],
+                    'ticket' => $ticketPath,
+                    'estado' => 'pendiente',
                 ]);
 
                 $producto->decrement('existencia', $item['cantidad']);
@@ -230,9 +262,12 @@ class VentaController extends Controller
         } catch (\Throwable $exception) {
             DB::rollBack();
 
+            Storage::disk('private')->delete($ticketsGuardados);
+
             Log::channel('ventas')->error('Error al procesar checkout', [
                 'mensaje' => $exception->getMessage(),
                 'cliente_id' => $usuario->id,
+                'total' => $total,
             ]);
 
             return redirect()->route('carrito.checkout')->with('error', 'No fue posible procesar la compra.');
@@ -243,9 +278,20 @@ class VentaController extends Controller
     {
         $this->authorize('view', $venta);
 
-        $venta->load(['producto', 'cliente', 'vendedor']);
+        $venta->load(['producto', 'cliente', 'vendedor', 'validador']);
 
         return view('ventas.show', compact('venta'));
+    }
+
+    public function showTicket(Venta $venta)
+    {
+        $this->authorize('viewTicket', $venta);
+
+        if (! $venta->ticket || ! Storage::disk('private')->exists($venta->ticket)) {
+            abort(404);
+        }
+
+        return Storage::disk('private')->response($venta->ticket);
     }
 
     public function edit(Venta $venta)
@@ -253,17 +299,53 @@ class VentaController extends Controller
         $this->authorize('update', $venta);
 
         $venta->load(['producto', 'cliente', 'vendedor']);
+        $vendedores = Usuario::where('es_vendedor', true)->orderBy('nombre')->get();
 
-        return view('ventas.edit', compact('venta'));
+        return view('ventas.edit', compact('venta', 'vendedores'));
     }
 
     public function update(UpdateVentaRequest $request, Venta $venta)
     {
         $this->authorize('update', $venta);
 
-        $venta->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('ticket')) {
+            if ($venta->ticket) {
+                Storage::disk('private')->delete($venta->ticket);
+            }
+
+            $data['ticket'] = $this->storeTicket($request);
+        }
+
+        $venta->update($data);
 
         return redirect()->route('ventas.show', $venta)->with('success', 'Venta actualizada correctamente.');
+    }
+
+    public function validateSale(ValidateVentaRequest $request, Venta $venta): RedirectResponse
+    {
+        $venta->loadMissing(['producto', 'cliente', 'vendedor']);
+
+        if ($venta->estaValidada()) {
+            return back()->with('error', 'La venta ya fue validada anteriormente.');
+        }
+
+        $venta->update([
+            'estado' => 'validada',
+            'validada_at' => now(),
+            'validada_por' => $request->user()->id,
+        ]);
+
+        Mail::to($venta->vendedor->correo)->send(new VentaValidadaVendedorMail($venta));
+        Mail::to($venta->cliente->correo)->send(new VentaValidadaCompradorMail($venta));
+
+        Log::channel('ventas')->info('Venta validada', [
+            'venta_id' => $venta->id,
+            'validada_por' => $request->user()->id,
+        ]);
+
+        return back()->with('success', 'Venta validada correctamente y correos enviados.');
     }
 
     public function destroy(Venta $venta)
@@ -274,6 +356,11 @@ class VentaController extends Controller
             DB::beginTransaction();
 
             $venta->producto->increment('existencia', $venta->cantidad);
+
+            if ($venta->ticket) {
+                Storage::disk('private')->delete($venta->ticket);
+            }
+
             $venta->delete();
 
             DB::commit();
@@ -315,5 +402,10 @@ class VentaController extends Controller
         }
 
         return [$items, $total];
+    }
+
+    protected function storeTicket(Request $request): string
+    {
+        return $request->file('ticket')->store('tickets', 'private');
     }
 }

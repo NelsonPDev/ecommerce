@@ -20,6 +20,7 @@ class StoreUsuarioRequest extends FormRequest
             'correo' => 'required|email|unique:usuarios,correo',
             'clave' => 'required|string|min:3|confirmed',
             'rol' => 'required|in:administrador,gerente,cliente',
+            'es_vendedor' => 'nullable|boolean',
         ];
     }
 }

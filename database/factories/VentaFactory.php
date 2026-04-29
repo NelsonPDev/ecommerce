@@ -24,6 +24,10 @@ class VentaFactory extends Factory
             'fecha' => $this->faker->date(),
             'cantidad' => $cantidad,
             'total' => $producto->precio * $cantidad,
+            'ticket' => null,
+            'estado' => 'pendiente',
+            'validada_at' => null,
+            'validada_por' => null,
         ];
     }
 }

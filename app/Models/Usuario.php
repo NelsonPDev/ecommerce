@@ -31,6 +31,7 @@ class Usuario extends Authenticatable
         'correo',
         'clave',
         'rol',
+        'es_vendedor',
     ];
 
     /**
@@ -53,6 +54,7 @@ class Usuario extends Authenticatable
         return [
             'correo_verified_at' => 'datetime',
             'clave' => 'hashed',
+            'es_vendedor' => 'boolean',
         ];
     }
 
@@ -78,6 +80,11 @@ class Usuario extends Authenticatable
     public function productos(): HasMany
     {
         return $this->hasMany(Producto::class, 'usuario_id');
+    }
+
+    public function codigosVerificacion(): HasMany
+    {
+        return $this->hasMany(CodigoVerificacion::class, 'usuario_id');
     }
 
     /**
@@ -146,5 +153,15 @@ class Usuario extends Authenticatable
     public function esCliente(): bool
     {
         return $this->hasRole('cliente');
+    }
+
+    public function esVendedor(): bool
+    {
+        return $this->es_vendedor;
+    }
+
+    public function puedeGestionarProductos(): bool
+    {
+        return $this->esAdministrador() || $this->esGerente() || $this->esVendedor();
     }
 }

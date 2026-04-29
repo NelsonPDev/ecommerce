@@ -31,7 +31,7 @@
 
         <section class="rounded-2xl bg-white p-6 shadow-sm">
             <h2 class="text-xl font-bold">Datos de la tarjeta</h2>
-            <form method="POST" action="{{ route('carrito.process') }}" class="mt-6 space-y-5">
+            <form method="POST" action="{{ route('carrito.process') }}" enctype="multipart/form-data" class="mt-6 space-y-5">
                 @csrf
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Titular de la tarjeta</label>
@@ -50,6 +50,11 @@
                         <label class="mb-2 block text-sm font-semibold">CVV</label>
                         <input type="password" name="cvv" maxlength="4" class="w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="123" required>
                     </div>
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Ticket de pago</label>
+                    <input type="file" name="ticket" accept="image/*" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <p class="mt-2 text-sm text-slate-500">Se guardara en el disco privado asociado a cada venta generada.</p>
                 </div>
                 <button type="submit" class="w-full rounded-xl px-4 py-3 text-sm font-semibold" style="background-color: #0891b2; color: #ffffff; border: 1px solid #0e7490;">
                     Confirmar compra

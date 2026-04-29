@@ -16,6 +16,14 @@
         <p class="mt-6 text-slate-700">{{ $producto->descripcion }}</p>
         <p class="mt-4 text-sm font-semibold text-slate-700">Existencia disponible: {{ $producto->existencia }}</p>
 
+        @if ($producto->fotoUrls())
+            <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                @foreach ($producto->fotoUrls() as $fotoUrl)
+                    <img src="{{ $fotoUrl }}" alt="Foto de {{ $producto->nombre }}" class="h-56 w-full rounded-2xl object-cover">
+                @endforeach
+            </div>
+        @endif
+
         <div class="mt-5 flex flex-wrap gap-2">
             @foreach ($producto->categorias as $categoria)
                 <a href="{{ route('categorias.show', $categoria) }}" class="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">

@@ -17,6 +17,9 @@
     <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         @forelse ($productos as $producto)
             <article class="rounded-2xl bg-white p-6 shadow-sm">
+                @if ($producto->primeraFotoUrl())
+                    <img src="{{ $producto->primeraFotoUrl() }}" alt="Foto de {{ $producto->nombre }}" class="mb-5 h-48 w-full rounded-2xl object-cover">
+                @endif
                 <div class="flex items-start justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold">{{ $producto->nombre }}</h2>

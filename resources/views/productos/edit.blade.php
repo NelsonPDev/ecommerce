@@ -3,7 +3,7 @@
 @section('content')
     <section class="rounded-3xl bg-white p-8 shadow-sm">
         <h1 class="text-3xl font-bold">Editar producto</h1>
-        <form method="POST" action="{{ route('productos.update', $producto) }}" class="mt-8 grid gap-5">
+        <form method="POST" action="{{ route('productos.update', $producto) }}" enctype="multipart/form-data" class="mt-8 grid gap-5">
             @csrf
             @method('PUT')
             <div>
@@ -23,6 +23,28 @@
                     <label class="mb-2 block text-sm font-semibold">Existencia</label>
                     <input name="existencia" type="number" min="0" value="{{ old('existencia', $producto->existencia) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
                 </div>
+            </div>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Nombre del vendedor</label>
+                    <input name="vendedor_nombre" type="text" value="{{ old('vendedor_nombre', $producto->usuario->nombre) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Apellidos del vendedor</label>
+                    <input name="vendedor_apellidos" type="text" value="{{ old('vendedor_apellidos', $producto->usuario->apellidos) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                </div>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Reemplazar fotos</label>
+                <input name="fotos[]" type="file" accept="image/*" multiple class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <p class="mt-2 text-sm text-slate-500">Si cargas nuevas imagenes se reemplazaran las anteriores.</p>
+                @if (! empty($producto->fotos))
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($producto->fotoUrls() as $fotoUrl)
+                            <img src="{{ $fotoUrl }}" alt="Foto actual de {{ $producto->nombre }}" class="h-32 w-full rounded-2xl object-cover">
+                        @endforeach
+                    </div>
+                @endif
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold">Categorias</label>

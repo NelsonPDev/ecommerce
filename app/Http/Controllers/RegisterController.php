@@ -24,6 +24,7 @@ class RegisterController extends Controller
             'correo' => $data['correo'],
             'clave' => Hash::make($data['clave']),
             'rol' => 'cliente',
+            'es_vendedor' => false,
         ]);
 
         Log::channel('autenticacion')->info('Registro exitoso', [

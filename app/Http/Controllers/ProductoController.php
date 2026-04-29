@@ -6,7 +6,9 @@ use App\Http\Requests\StoreProductoRequest;
 use App\Http\Requests\UpdateProductoRequest;
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -37,13 +39,21 @@ class ProductoController extends Controller
     {
         $data = $request->validated();
         $usuario = auth()->user();
+        $vendedor = $this->resolveVendedor($data);
+
+        if (! $vendedor) {
+            return back()->withErrors([
+                'vendedor_nombre' => 'El vendedor indicado no existe o no puede asignarse a productos.',
+            ])->withInput();
+        }
 
         $producto = Producto::create([
             'nombre' => $data['nombre'],
             'descripcion' => $data['descripcion'],
             'precio' => $data['precio'],
             'existencia' => $data['existencia'],
-            'usuario_id' => $usuario->id,
+            'fotos' => $this->storeFotos($request),
+            'usuario_id' => $vendedor->id,
         ]);
 
         $producto->categorias()->sync($data['categorias']);
@@ -62,7 +72,7 @@ class ProductoController extends Controller
         $this->authorize('update', $producto);
 
         $categorias = Categoria::orderBy('nombre')->get();
-        $producto->load('categorias');
+        $producto->load(['categorias', 'usuario']);
 
         return view('productos.edit', compact('producto', 'categorias'));
     }
@@ -71,12 +81,21 @@ class ProductoController extends Controller
     {
         $data = $request->validated();
         $usuario = auth()->user();
+        $vendedor = $this->resolveVendedor($data);
+
+        if (! $vendedor) {
+            return back()->withErrors([
+                'vendedor_nombre' => 'El vendedor indicado no existe o no puede asignarse a productos.',
+            ])->withInput();
+        }
 
         $producto->update([
             'nombre' => $data['nombre'],
             'descripcion' => $data['descripcion'],
             'precio' => $data['precio'],
             'existencia' => $data['existencia'],
+            'fotos' => $request->hasFile('fotos') ? $this->replaceFotos($producto, $request) : $producto->fotos,
+            'usuario_id' => $vendedor->id,
         ]);
 
         $producto->categorias()->sync($data['categorias']);
@@ -101,9 +120,38 @@ class ProductoController extends Controller
             'nombre' => $producto->nombre,
         ]);
 
+        Storage::disk('public')->delete($producto->fotos ?? []);
         $producto->categorias()->detach();
         $producto->delete();
 
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
+    }
+
+    protected function resolveVendedor(array $data): ?Usuario
+    {
+        $vendedores = Usuario::where('nombre', $data['vendedor_nombre'])
+            ->where('apellidos', $data['vendedor_apellidos'])
+            ->where('es_vendedor', true)
+            ->get();
+
+        if ($vendedores->count() !== 1) {
+            return null;
+        }
+
+        return $vendedores->first();
+    }
+
+    protected function storeFotos(StoreProductoRequest|UpdateProductoRequest $request): array
+    {
+        return collect($request->file('fotos', []))
+            ->map(fn ($foto) => $foto->store('productos', 'public'))
+            ->all();
+    }
+
+    protected function replaceFotos(Producto $producto, UpdateProductoRequest $request): array
+    {
+        Storage::disk('public')->delete($producto->fotos ?? []);
+
+        return $this->storeFotos($request);
     }
 }

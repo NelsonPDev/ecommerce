@@ -6,52 +6,66 @@ use App\Models\Categoria;
 use App\Models\Producto;
 use App\Models\Usuario;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductoSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = Usuario::where('rol', 'administrador')->first();
-        $gerente = Usuario::where('rol', 'gerente')->first();
+        $categorias = Categoria::all();
+        $vendedores = Usuario::where('es_vendedor', true)->get();
 
-        $productos = [
-            [
-                'nombre' => 'Laptop Gaming',
-                'descripcion' => 'Laptop de alto rendimiento para desarrollo y videojuegos.',
-                'precio' => 1500.00,
-                'existencia' => 10,
-                'usuario_id' => $admin?->id,
-                'categorias' => ['Electronica'],
-            ],
-            [
-                'nombre' => 'Camiseta Deportiva',
-                'descripcion' => 'Camiseta comoda para actividades deportivas.',
-                'precio' => 25.00,
-                'existencia' => 50,
-                'usuario_id' => $gerente?->id ?? $admin?->id,
-                'categorias' => ['Ropa', 'Deportes'],
-            ],
-            [
-                'nombre' => 'Libro de Programacion',
-                'descripcion' => 'Guia practica para aprender Laravel y PHP.',
-                'precio' => 40.00,
-                'existencia' => 20,
-                'usuario_id' => $gerente?->id ?? $admin?->id,
-                'categorias' => ['Libros'],
-            ],
-        ];
+        foreach ($vendedores as $vendedor) {
+            foreach (range(1, 3) as $indice) {
+                $nombreProducto = 'Producto '.$vendedor->id.'-'.$indice;
+                $fotos = $this->crearFotosDemo($nombreProducto);
 
-        foreach ($productos as $data) {
-            if (! $data['usuario_id']) {
-                continue;
+                $producto = Producto::create([
+                    'nombre' => $nombreProducto,
+                    'descripcion' => 'Producto de demostracion para pruebas de relaciones, archivos y ventas.',
+                    'precio' => fake()->randomFloat(2, 150, 2500),
+                    'existencia' => fake()->numberBetween(6, 20),
+                    'fotos' => $fotos,
+                    'usuario_id' => $vendedor->id,
+                ]);
+
+                $producto->categorias()->attach(
+                    $categorias->random(fake()->numberBetween(1, min(3, $categorias->count())))->pluck('id')->all()
+                );
             }
-
-            $categorias = $data['categorias'];
-            unset($data['categorias']);
-
-            $producto = Producto::create($data);
-            $categoriaIds = Categoria::whereIn('nombre', $categorias)->pluck('id');
-            $producto->categorias()->attach($categoriaIds);
         }
+    }
+
+    protected function crearFotosDemo(string $base): array
+    {
+        return collect(range(1, fake()->numberBetween(1, 2)))
+            ->map(function (int $indice) use ($base) {
+                $path = 'productos/'.Str::slug($base).'-'.$indice.'.svg';
+
+                Storage::disk('public')->put($path, $this->svgProducto($base, $indice));
+
+                return $path;
+            })
+            ->all();
+    }
+
+    protected function svgProducto(string $titulo, int $indice): string
+    {
+        return <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg{$indice}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0891b2" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg{$indice})" rx="32" />
+  <circle cx="640" cy="120" r="80" fill="#22d3ee" opacity="0.35" />
+  <circle cx="170" cy="470" r="110" fill="#f59e0b" opacity="0.25" />
+  <text x="60" y="260" fill="#ffffff" font-family="Arial, sans-serif" font-size="42" font-weight="700">{$titulo}</text>
+  <text x="60" y="320" fill="#cffafe" font-family="Arial, sans-serif" font-size="26">Galeria publica {$indice}</text>
+</svg>
+SVG;
     }
 }

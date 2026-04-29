@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Venta;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateVentaRequest extends FormRequest
 {
@@ -16,9 +17,13 @@ class UpdateVentaRequest extends FormRequest
     {
         return [
             'cantidad' => 'required|integer|min:1',
-            'vendedor_id' => 'required|exists:usuarios,id',
+            'vendedor_id' => [
+                'required',
+                Rule::exists('usuarios', 'id')->where('es_vendedor', true),
+            ],
             'fecha' => 'required|date',
             'total' => 'required|numeric|min:0',
+            'ticket' => 'nullable|image|max:4096',
         ];
     }
 }

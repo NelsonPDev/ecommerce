@@ -24,6 +24,7 @@ class UpdateUsuarioRequest extends FormRequest
             'correo' => ['required', 'email', Rule::unique('usuarios', 'correo')->ignore($this->route('usuario'))],
             'clave' => 'nullable|string|min:3|confirmed',
             'rol' => ['required', Rule::in($rolesPermitidos)],
+            'es_vendedor' => 'nullable|boolean',
         ];
     }
 }
