@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasMany as EloquentHasMany;
-use Illuminate\Support\Facades\Storage;
 
 class Producto extends Model
 {
@@ -60,7 +59,7 @@ class Producto extends Model
     public function fotoUrls(): array
     {
         return collect($this->fotos ?? [])
-            ->map(fn (string $path) => Storage::disk('public')->url($path))
+            ->map(fn (string $path) => route('storage.image', ['path' => $path]))
             ->all();
     }
 
@@ -68,6 +67,6 @@ class Producto extends Model
     {
         $foto = collect($this->fotos ?? [])->first();
 
-        return $foto ? Storage::disk('public')->url($foto) : null;
+        return $foto ? route('storage.image', ['path' => $foto]) : null;
     }
 }

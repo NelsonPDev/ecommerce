@@ -31,8 +31,9 @@ class ProductoController extends Controller
         $this->authorize('create', Producto::class);
 
         $categorias = Categoria::orderBy('nombre')->get();
+        $vendedores = Usuario::where('es_vendedor', true)->orderBy('nombre')->get();
 
-        return view('productos.create', compact('categorias'));
+        return view('productos.create', compact('categorias', 'vendedores'));
     }
 
     public function store(StoreProductoRequest $request)
@@ -43,7 +44,7 @@ class ProductoController extends Controller
 
         if (! $vendedor) {
             return back()->withErrors([
-                'vendedor_nombre' => 'El vendedor indicado no existe o no puede asignarse a productos.',
+                'vendedor_id' => 'El vendedor indicado no existe o no puede asignarse a productos.',
             ])->withInput();
         }
 
@@ -72,9 +73,10 @@ class ProductoController extends Controller
         $this->authorize('update', $producto);
 
         $categorias = Categoria::orderBy('nombre')->get();
+        $vendedores = Usuario::where('es_vendedor', true)->orderBy('nombre')->get();
         $producto->load(['categorias', 'usuario']);
 
-        return view('productos.edit', compact('producto', 'categorias'));
+        return view('productos.edit', compact('producto', 'categorias', 'vendedores'));
     }
 
     public function update(UpdateProductoRequest $request, Producto $producto)
@@ -85,7 +87,7 @@ class ProductoController extends Controller
 
         if (! $vendedor) {
             return back()->withErrors([
-                'vendedor_nombre' => 'El vendedor indicado no existe o no puede asignarse a productos.',
+                'vendedor_id' => 'El vendedor indicado no existe o no puede asignarse a productos.',
             ])->withInput();
         }
 
@@ -129,16 +131,15 @@ class ProductoController extends Controller
 
     protected function resolveVendedor(array $data): ?Usuario
     {
-        $vendedores = Usuario::where('nombre', $data['vendedor_nombre'])
-            ->where('apellidos', $data['vendedor_apellidos'])
-            ->where('es_vendedor', true)
-            ->get();
-
-        if ($vendedores->count() !== 1) {
+        if (!isset($data['vendedor_id'])) {
             return null;
         }
 
-        return $vendedores->first();
+        $vendedor = Usuario::where('id', $data['vendedor_id'])
+            ->where('es_vendedor', true)
+            ->first();
+
+        return $vendedor;
     }
 
     protected function storeFotos(StoreProductoRequest|UpdateProductoRequest $request): array

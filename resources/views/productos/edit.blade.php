@@ -24,15 +24,19 @@
                     <input name="existencia" type="number" min="0" value="{{ old('existencia', $producto->existencia) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
                 </div>
             </div>
-            <div class="grid gap-5 md:grid-cols-2">
-                <div>
-                    <label class="mb-2 block text-sm font-semibold">Nombre del vendedor</label>
-                    <input name="vendedor_nombre" type="text" value="{{ old('vendedor_nombre', $producto->usuario->nombre) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
-                </div>
-                <div>
-                    <label class="mb-2 block text-sm font-semibold">Apellidos del vendedor</label>
-                    <input name="vendedor_apellidos" type="text" value="{{ old('vendedor_apellidos', $producto->usuario->apellidos) }}" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
-                </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold">Vendedor</label>
+                <select name="vendedor_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">-- Selecciona un vendedor --</option>
+                    @foreach ($vendedores as $vendedor)
+                        <option value="{{ $vendedor->id }}" @selected(old('vendedor_id', $producto->usuario_id) == $vendedor->id)>
+                            {{ $vendedor->nombre }} {{ $vendedor->apellidos }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('vendedor_id')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold">Reemplazar fotos</label>
