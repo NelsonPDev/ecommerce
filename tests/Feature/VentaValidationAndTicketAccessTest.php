@@ -16,17 +16,16 @@ class VentaValidationAndTicketAccessTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_only_owner_or_manager_can_view_private_ticket(): void
+    public function test_only_buyer_or_manager_can_view_private_ticket(): void
     {
-        Storage::fake('private');
-
         $gerente = Usuario::factory()->gerente()->create();
         $vendedor = Usuario::factory()->cliente()->vendedor()->create();
         $cliente = Usuario::factory()->cliente()->create();
         $intruso = Usuario::factory()->cliente()->create();
         $producto = Producto::factory()->create(['usuario_id' => $vendedor->id]);
+        $ticketPath = 'tickets/prueba-'.uniqid().'.png';
 
-        Storage::disk('private')->put('tickets/prueba.png', 'contenido');
+        Storage::disk('private')->put($ticketPath, 'contenido');
 
         $venta = Venta::create([
             'producto_id' => $producto->id,
@@ -35,14 +34,16 @@ class VentaValidationAndTicketAccessTest extends TestCase
             'fecha' => now()->toDateString(),
             'cantidad' => 1,
             'total' => 100,
-            'ticket' => 'tickets/prueba.png',
+            'ticket' => $ticketPath,
             'estado' => 'pendiente',
         ]);
 
         $this->actingAs($cliente)->get(route('ventas.ticket', $venta))->assertOk();
-        $this->actingAs($vendedor)->get(route('ventas.ticket', $venta))->assertOk();
         $this->actingAs($gerente)->get(route('ventas.ticket', $venta))->assertOk();
+        $this->actingAs($vendedor)->get(route('ventas.ticket', $venta))->assertForbidden();
         $this->actingAs($intruso)->get(route('ventas.ticket', $venta))->assertForbidden();
+
+        Storage::disk('private')->delete($ticketPath);
     }
 
     public function test_manager_can_validate_sale_and_send_notifications(): void

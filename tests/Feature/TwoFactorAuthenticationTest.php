@@ -6,6 +6,7 @@ use App\Mail\CodigoVerificacionMail;
 use App\Models\CodigoVerificacion;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -60,5 +61,33 @@ class TwoFactorAuthenticationTest extends TestCase
         ])->assertSessionHasErrors('codigo');
 
         $this->assertGuest();
+    }
+
+    public function test_expired_two_factor_code_does_not_authenticate_user(): void
+    {
+        Mail::fake();
+
+        $usuario = Usuario::factory()->create([
+            'correo' => 'cliente3@example.com',
+            'clave' => 'secreto123',
+        ]);
+
+        $this->post(route('login.post'), [
+            'correo' => $usuario->correo,
+            'clave' => 'secreto123',
+        ])->assertRedirect(route('two-factor.show'));
+
+        $codigo = CodigoVerificacion::firstOrFail();
+        Carbon::setTestNow($codigo->expiracion->copy()->addSecond());
+
+        $this->post(route('two-factor.verify'), [
+            'codigo' => $codigo->codigo,
+        ])->assertRedirect(route('login'))
+            ->assertSessionHasErrors('codigo');
+
+        Carbon::setTestNow();
+
+        $this->assertGuest();
+        $this->assertDatabaseCount('codigos_verificacion', 0);
     }
 }

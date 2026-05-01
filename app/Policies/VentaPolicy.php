@@ -43,6 +43,6 @@ class VentaPolicy
 
     public function viewTicket(Usuario $user, Venta $venta): bool
     {
-        return $user->esGerente() || $venta->cliente_id === $user->id || $venta->vendedor_id === $user->id;
+        return $user->esGerente() || $venta->cliente_id === $user->id;
     }
 }

@@ -42,4 +42,9 @@ class UsuarioPolicy
 
         return false;
     }
+
+    public function viewStatistics(Usuario $user): bool
+    {
+        return $user->esAdministrador();
+    }
 }

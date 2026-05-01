@@ -125,6 +125,22 @@ class Usuario extends Authenticatable
     }
 
     /**
+     * Relacion hasManyThrough: Usuario -> Productos -> Ventas.
+     * Permite obtener las ventas generadas por los productos del vendedor.
+     */
+    public function ventasDeSusProductos(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Venta::class,
+            Producto::class,
+            'usuario_id',
+            'producto_id',
+            'id',
+            'id'
+        );
+    }
+
+    /**
      * Relación hasManyThrough: Usuario -> Productos -> Categorías
      */
     public function categorias(): Collection

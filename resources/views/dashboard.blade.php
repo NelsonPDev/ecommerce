@@ -8,7 +8,7 @@
             <p class="mt-3 text-slate-600">Consultas construidas con relaciones Eloquent para usuarios, categorias, productos y ventas.</p>
         </section>
 
-        <section class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <section class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             <article class="rounded-2xl bg-white p-6 shadow-sm">
                 <p class="text-sm text-slate-500">Total de usuarios</p>
                 <p class="mt-2 text-3xl font-bold text-slate-900">{{ $totalUsuarios }}</p>
@@ -20,13 +20,6 @@
             <article class="rounded-2xl bg-white p-6 shadow-sm">
                 <p class="text-sm text-slate-500">Total de compradores</p>
                 <p class="mt-2 text-3xl font-bold text-slate-900">{{ $totalCompradores }}</p>
-            </article>
-            <article class="rounded-2xl bg-white p-6 shadow-sm">
-                <p class="text-sm text-slate-500">Vendedor con mas categorias</p>
-                <p class="mt-2 text-lg font-bold text-slate-900">
-                    {{ $vendedorConMasCategorias?->nombre }} {{ $vendedorConMasCategorias?->apellidos }}
-                </p>
-                <p class="mt-1 text-sm text-slate-500">{{ $vendedorConMasCategorias?->categoria_productos_count ?? 0 }} relaciones categoria-producto</p>
             </article>
         </section>
 
