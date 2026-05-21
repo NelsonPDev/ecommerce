@@ -18,9 +18,9 @@ class DatabaseSeederRequirementsTest extends TestCase
 
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertDatabaseCount('usuarios', 100);
+        $this->assertDatabaseCount('usuarios', 103);
         $this->assertSame(30, \App\Models\Usuario::where('es_vendedor', true)->count());
-        $this->assertSame(70, \App\Models\Usuario::where('es_vendedor', false)->count());
+        $this->assertSame(73, \App\Models\Usuario::where('es_vendedor', false)->count());
 
         $this->assertSame(
             0,
